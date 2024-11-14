@@ -1,9 +1,9 @@
+from dataclasses import dataclass
 from datetime import datetime
 
-from .base import BaseValueObject, VT
-from dataclasses import dataclass
-
-from ..exceptions.product import EmptyTextException, TitleTooLongException, ExpiresDateException
+from ..exceptions.product import (EmptyTextException, ExpiresDateException,
+                                  TitleTooLongException)
+from .base import VT, BaseValueObject
 
 
 @dataclass(frozen=True)
@@ -43,4 +43,3 @@ class ExpiresDate(BaseValueObject):
 
     def as_generic_type(self) -> VT:
         return self.value
-

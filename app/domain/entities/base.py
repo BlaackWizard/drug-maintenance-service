@@ -5,7 +5,7 @@ from datetime import datetime
 
 @dataclass
 class BaseEntity(ABC):
-    id: int
+    id: int # noqa
     created_at: datetime = field(
         default_factory=lambda: datetime.now(),
         kw_only=True,

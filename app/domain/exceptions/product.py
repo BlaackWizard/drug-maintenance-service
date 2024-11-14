@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from .base import ApplicationException
 
 
@@ -22,5 +23,4 @@ class EmptyTextException(ApplicationException):
 class ExpiresDateException(ApplicationException):
     @property
     def message(self):
-        return f'The expiration date has expired'
-
+        return f'The expiration date has expired' # noqa

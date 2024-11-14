@@ -1,6 +1,7 @@
 from dataclasses import dataclass
+
+from ..values.product import ExpiresDate, Text, Title
 from .base import BaseEntity
-from ..values.product import Text, Title, ExpiresDate
 
 
 @dataclass
@@ -11,4 +12,3 @@ class ProductEntity(BaseEntity):
     image_url: Text
     ingredients: Text
     manufacturer: Text
-
