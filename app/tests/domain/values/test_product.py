@@ -3,8 +3,10 @@ from datetime import datetime
 import pytest
 
 from ....domain.entities.product import ProductEntity
-from ....domain.exceptions.product import TitleTooLongException, EmptyTextException, ExpiresDateException
-from ....domain.values.product import Text, Title, ExpiresDate
+from ....domain.exceptions.product import (EmptyTextException,
+                                           ExpiresDateException,
+                                           TitleTooLongException)
+from ....domain.values.product import ExpiresDate, Text, Title
 
 
 def test_create_product_success():
@@ -23,18 +25,21 @@ def test_create_product_success():
         expiry_date=expiry_date,
         image_url=image_url,
         ingredients=ingredients,
-        manufacturer=manufacturer
+        manufacturer=manufacturer,
     )
     assert product.title == title
     assert product.expiry_date == expiry_date
+
 
 def test_title_is_too_long():
     with pytest.raises(TitleTooLongException):
         Title('a' * 500)
 
+
 def test_text_is_empty():
     with pytest.raises(EmptyTextException):
         Text('')
+
 
 def test_expiration_date_expired():
     with pytest.raises(ExpiresDateException):
