@@ -12,3 +12,9 @@ class ProductEntity(BaseEntity):
     image_url: Text
     ingredients: Text
     manufacturer: Text
+
+    def __hash__(self) -> int:
+        return hash(self.oid)
+
+    def __eq__(self, __value: 'ProductEntity') -> bool:
+        return self.oid == __value.oid

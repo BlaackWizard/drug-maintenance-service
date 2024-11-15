@@ -2,13 +2,17 @@ from abc import ABC
 from copy import copy
 from dataclasses import dataclass, field
 from datetime import datetime
+from uuid import uuid4
 
 from app.domain.events.base import BaseEvent
 
 
 @dataclass
 class BaseEntity(ABC):
-    id: int # noqa
+    oid: str = field(
+        default_factory=lambda: str(uuid4()),
+        kw_only=True,
+    )
     created_at: datetime = field(
         default_factory=lambda: datetime.now(),
         kw_only=True,
@@ -25,9 +29,3 @@ class BaseEntity(ABC):
         registered_events = copy(self._events)
         self._events.clear()
         return registered_events
-
-    def __hash__(self) -> int:
-        return hash(self.id)
-
-    def __eq__(self, __value: 'BaseEntity') -> bool:
-        return self.id == __value.id

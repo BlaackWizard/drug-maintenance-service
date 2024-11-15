@@ -16,13 +16,19 @@ class PharmacyEntity(BaseEntity):
         self.products.add(product)
         self.register_event(
             NewProductReceivedEvent(
-                product_id=product.id,
-                title=product.title,
-                description=product.description,
-                expiry_date=product.expiry_date,
-                image_url=product.image_url,
-                ingredients=product.ingredients,
-                manufacturer=product.manufacturer,
-                pharmacy_id=self.id,
+                product_oid=product.oid,
+                title=product.title.as_generic_type(),
+                description=product.description.as_generic_type(),
+                expiry_date=product.expiry_date.as_generic_type(),
+                image_url=product.image_url.as_generic_type(),
+                ingredients=product.ingredients.as_generic_type(),
+                manufacturer=product.manufacturer.as_generic_type(),
+                pharmacy_oid=self.oid,
             ),
         )
+
+    def __hash__(self) -> int:
+        return hash(self.oid)
+
+    def __eq__(self, __value: 'PharmacyEntity') -> bool:
+        return self.oid == __value.oid
