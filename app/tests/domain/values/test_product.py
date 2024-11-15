@@ -6,8 +6,9 @@ from ....domain.entities.pharmacy import PharmacyEntity
 from ....domain.entities.product import ProductEntity
 from ....domain.exceptions.product import (EmptyTextException,
                                            ExpiresDateException,
-                                           TitleTooLongException)
-from ....domain.values.product import ExpiresDate, Text, Title
+                                           TitleTooLongException, PriceIsNegativeValueException,
+                                           )
+from ....domain.values.product import ExpiresDate, Text, Title, Price
 
 
 def test_create_product_success():
@@ -38,6 +39,11 @@ def test_title_is_too_long():
 def test_text_is_empty():
     with pytest.raises(EmptyTextException):
         Text('')
+
+
+def test_price_is_less_than_zero():
+    with pytest.raises(PriceIsNegativeValueException):
+        Price(-123)
 
 
 def test_expiration_date_expired():
@@ -72,9 +78,16 @@ def test_add_product_to_pharmacy():
         ingredients=ingredients,
         manufacturer=manufacturer,
     )
+
+    title_pharmacy = Title("apteka")
+    description_pharmacy = Text("apteka")
+
     pharmacy = PharmacyEntity(
-        title="apteka",
-        description="apteka",
+        title=title_pharmacy,
+        description=description_pharmacy,
     )
-    pharmacy.add_product(product=product)
+    price = Price(100.020)
+    pharmacy.add_product(product=product, price=price)
+
     assert product in pharmacy.products
+

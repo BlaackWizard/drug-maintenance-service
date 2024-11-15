@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
+from typing import Dict
 
+from .price import PriceEntity
 from ..events.product import NewProductReceivedEvent
-from ..values.product import Text, Title
+from ..values.product import Text, Title, Price
 from .base import BaseEntity
 from .product import ProductEntity
 
@@ -10,10 +12,20 @@ from .product import ProductEntity
 class PharmacyEntity(BaseEntity):
     title: Title
     description: Text
-    products: set[ProductEntity] = field(default_factory=set, kw_only=True)
+    products: set['ProductEntity'] = field(default_factory=set, kw_only=True)
+    prices: Dict['ProductEntity', 'PriceEntity'] = field(default_factory=dict, kw_only=True)
 
-    def add_product(self, product: ProductEntity):
+    def add_product(self, product: ProductEntity, price: Price):
+
+        price_entity = PriceEntity(
+            product=product,
+            pharmacy=self,
+            price=price
+        )
+
         self.products.add(product)
+        self.prices[product] = price_entity
+
         self.register_event(
             NewProductReceivedEvent(
                 product_oid=product.oid,
@@ -23,6 +35,7 @@ class PharmacyEntity(BaseEntity):
                 image_url=product.image_url.as_generic_type(),
                 ingredients=product.ingredients.as_generic_type(),
                 manufacturer=product.manufacturer.as_generic_type(),
+                price=price.as_generic_type(),
                 pharmacy_oid=self.oid,
             ),
         )

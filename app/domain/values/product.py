@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from ..exceptions.product import (EmptyTextException, ExpiresDateException,
-                                  TitleTooLongException)
+                                  TitleTooLongException, PriceIsNegativeValueException, PriceIsIntegerValueException)
 from .base import VT, BaseValueObject
 
 
@@ -43,3 +43,15 @@ class ExpiresDate(BaseValueObject):
 
     def as_generic_type(self) -> VT:
         return self.value
+
+
+@dataclass(frozen=True)
+class Price(BaseValueObject):
+    value: float
+
+    def validate(self):
+        if self.value < 0:
+            raise PriceIsNegativeValueException
+
+    def as_generic_type(self) -> VT:
+        return float(self.value)

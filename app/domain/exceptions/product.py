@@ -24,3 +24,17 @@ class ExpiresDateException(ApplicationException):
     @property
     def message(self):
         return f'The expiration date has expired' # noqa
+
+
+@dataclass(eq=False)
+class PriceIsNegativeValueException(ApplicationException):
+    @property
+    def message(self):
+        return f"The price cannot be less than 0"
+
+
+@dataclass(eq=False)
+class PriceIsIntegerValueException(ApplicationException):
+    @property
+    def message(self):
+        return f'The price must be type float'

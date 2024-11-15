@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from uuid import uuid4
 
-from app.domain.events.base import BaseEvent
+from ...domain.events.base import BaseEvent
 
 
 @dataclass
