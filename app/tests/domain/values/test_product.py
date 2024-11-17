@@ -4,11 +4,12 @@ import pytest
 
 from ....domain.entities.pharmacy import PharmacyEntity
 from ....domain.entities.product import ProductEntity
+from ....domain.events.product import NewProductReceivedEvent
 from ....domain.exceptions.product import (EmptyTextException,
                                            ExpiresDateException,
-                                           TitleTooLongException, PriceIsNegativeValueException,
-                                           )
-from ....domain.values.product import ExpiresDate, Text, Title, Price
+                                           PriceIsNegativeValueException,
+                                           TitleTooLongException)
+from ....domain.values.product import ExpiresDate, Price, Text, Title
 
 
 def test_create_product_success():
@@ -91,3 +92,41 @@ def test_add_product_to_pharmacy():
 
     assert product in pharmacy.products
 
+
+def test_new_product_events():
+    title = Title('Синупрет драже')
+    description = Text('Лечит все болезни')
+    expiry_date = ExpiresDate(datetime(2025, 1, 7))
+    image_url = Text('https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg')
+    ingredients = Text("...")
+    manufacturer = Text("Китай")
+
+    product = ProductEntity(
+        title=title,
+        description=description,
+        expiry_date=expiry_date,
+        image_url=image_url,
+        ingredients=ingredients,
+        manufacturer=manufacturer,
+    )
+
+    title_pharmacy = Title("apteka")
+    description_pharmacy = Text("apteka")
+
+    pharmacy = PharmacyEntity(
+        title=title_pharmacy,
+        description=description_pharmacy,
+    )
+    price = Price(100.020)
+    pharmacy.add_product(product, price)
+
+    events = pharmacy.pull_events()
+    pulled_events = pharmacy.pull_events()
+
+    new_event = events[0]
+
+    assert not pulled_events, pulled_events
+    assert isinstance(new_event, NewProductReceivedEvent), new_event
+    assert new_event.product_oid == product.oid
+    assert new_event.title == product.title.as_generic_type()
+    assert new_event.pharmacy_oid == pharmacy.oid

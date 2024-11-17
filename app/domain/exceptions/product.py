@@ -30,11 +30,11 @@ class ExpiresDateException(ApplicationException):
 class PriceIsNegativeValueException(ApplicationException):
     @property
     def message(self):
-        return f"The price cannot be less than 0"
+        return "The price cannot be less than zero"
 
 
 @dataclass(eq=False)
 class PriceIsIntegerValueException(ApplicationException):
     @property
     def message(self):
-        return f'The price must be type float'
+        return 'The price must be type float'

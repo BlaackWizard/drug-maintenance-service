@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from ..values.product import ExpiresDate, Text, Title, Price
+from ..values.product import ExpiresDate, Price, Text, Title
 from .base import BaseEvent
 
 

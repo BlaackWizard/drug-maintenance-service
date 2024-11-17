@@ -10,7 +10,12 @@ python = "^3.12"
 fastapi = "^0.115.5"
 uvicorn = "^0.32.0"
 python-decouple = "^3.8"
-pytest = "^8.3.3"
+pytest = {extras = ["all"], version = "^8.3.3"}
+faker = "^33.0.0"
+anyio = "^4.6.2.post1"
+pytest-asyncio = "^0.24.0"
+pytest-tornasync = "^0.6.0.post2"
+pytest-trio = "^0.8.0"
 
 
 [tool.poetry.group.dev.dependencies]

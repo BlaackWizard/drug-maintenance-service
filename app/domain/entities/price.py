@@ -6,8 +6,8 @@ from ...domain.values.product import Price
 
 @dataclass
 class PriceEntity(BaseEntity):
-    product: 'ProductEntity'
-    pharmacy: 'PharmacyEntity'
+    product: 'ProductEntity' # noqa
+    pharmacy: 'PharmacyEntity' # noqa
     price: Price
 
     def __hash__(self) -> int:

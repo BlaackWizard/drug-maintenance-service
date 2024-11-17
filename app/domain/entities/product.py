@@ -18,5 +18,3 @@ class ProductEntity(BaseEntity):
 
     def __eq__(self, __value: 'ProductEntity') -> bool:
         return self.oid == __value.oid
-
-

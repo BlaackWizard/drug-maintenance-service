@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from ..exceptions.product import (EmptyTextException, ExpiresDateException,
-                                  TitleTooLongException, PriceIsNegativeValueException, PriceIsIntegerValueException)
+                                  PriceIsNegativeValueException,
+                                  TitleTooLongException)
 from .base import VT, BaseValueObject
 
 
@@ -26,7 +27,7 @@ class Title(BaseValueObject):
         if not self.value:
             raise EmptyTextException()
 
-        if len(self.value) > 255:
+        if len(str(self.value)) > 255:
             raise TitleTooLongException(self.value)
 
     def as_generic_type(self) -> VT:
