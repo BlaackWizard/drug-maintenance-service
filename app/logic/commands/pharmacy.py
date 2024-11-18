@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from app.domain.entities.pharmacy import PharmacyEntity
-from app.domain.values.product import Title, Text
+from app.domain.values.product import Text, Title
 from app.infra.repositories.pharmacy import BasePharmacyRepo
 from app.logic.commands.base import BaseCommand, CommandHandler
 from app.logic.exceptions.pharmacy import PharmacyByTitleAlreadyExistsException

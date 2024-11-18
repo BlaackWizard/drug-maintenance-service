@@ -9,4 +9,4 @@ class PharmacyByTitleAlreadyExistsException(LogicException):
 
     @property
     def message(self):
-        return f'{self.title} с таким названием уже существует'
+        return f'Аптека с таким названием уже существует "{self.title}"'

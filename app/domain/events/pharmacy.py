@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from app.domain.events.base import BaseEvent
-from app.domain.values.product import Title, Text
+from ...domain.events.base import BaseEvent
+from ...domain.values.product import Text, Title
 
 
 @dataclass
