@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from typing import List
 
 from ...domain.entities.pharmacy import PharmacyEntity
 
@@ -18,7 +19,7 @@ class BasePharmacyRepo(ABC):
 @dataclass
 class MemoryPharmacyRepo(BasePharmacyRepo):
 
-    _saved_pharmacies: list[PharmacyEntity] = field(
+    _saved_pharmacies: List[PharmacyEntity] = field(
         default_factory=list,
         kw_only=True,
     )
@@ -27,7 +28,7 @@ class MemoryPharmacyRepo(BasePharmacyRepo):
         try:
             return bool(
                 next(
-                    pharmacy for pharmacy in self._saved_pharmacies if pharmacy.title == title
+                    pharmacy for pharmacy in self._saved_pharmacies if pharmacy.title.as_generic_type() == title
                 ),
             )
         except StopIteration:

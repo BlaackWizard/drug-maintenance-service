@@ -4,7 +4,7 @@ import pytest
 
 from ....domain.entities.pharmacy import PharmacyEntity
 from ....domain.entities.product import ProductEntity
-from ....domain.events.product import NewProductReceivedEvent
+from ....domain.events.product import ProductAddedToPharmacyEvent
 from ....domain.exceptions.product import (EmptyTextException,
                                            ExpiresDateException,
                                            PriceIsNegativeValueException,
@@ -102,12 +102,12 @@ def test_new_product_events():
     manufacturer = Text("Китай")
 
     product = ProductEntity(
-        title=title,
-        description=description,
-        expiry_date=expiry_date,
-        image_url=image_url,
-        ingredients=ingredients,
-        manufacturer=manufacturer,
+        title=title.as_generic_type(),
+        description=description.as_generic_type(),
+        expiry_date=expiry_date.as_generic_type(),
+        image_url=image_url.as_generic_type(),
+        ingredients=ingredients.as_generic_type(),
+        manufacturer=manufacturer.as_generic_type(),
     )
 
     title_pharmacy = Title("apteka")
@@ -126,7 +126,7 @@ def test_new_product_events():
     new_event = events[0]
 
     assert not pulled_events, pulled_events
-    assert isinstance(new_event, NewProductReceivedEvent), new_event
+    assert isinstance(new_event, ProductAddedToPharmacyEvent), new_event
     assert new_event.product_oid == product.oid
-    assert new_event.title == product.title.as_generic_type()
+    assert new_event.title == product.title
     assert new_event.pharmacy_oid == pharmacy.oid

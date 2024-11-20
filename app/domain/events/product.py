@@ -13,5 +13,16 @@ class NewProductReceivedEvent(BaseEvent):
     image_url: Text
     ingredients: Text
     manufacturer: Text
+
+
+@dataclass
+class ProductAddedToPharmacyEvent(BaseEvent):
+    product_oid: str
+    title: Title
+    description: Text
+    expiry_date: ExpiresDate
+    image_url: Text
+    ingredients: Text
+    manufacturer: Text
     price: Price
     pharmacy_oid: str

@@ -12,6 +12,3 @@ class PriceEntity(BaseEntity):
 
     def __hash__(self) -> int:
         return hash(self.oid)
-
-    def __eq__(self, __value: 'PriceEntity') -> bool:
-        return self.oid == __value.oid

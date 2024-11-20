@@ -15,10 +15,10 @@ class CreatePharmacyCommand(BaseCommand):
 
 @dataclass(frozen=True)
 class PharmacyHandler(CommandHandler[CreatePharmacyCommand, PharmacyEntity]):
-    pharmacy_repo: BasePharmacyRepo
+    pharmacy_repository: BasePharmacyRepo
 
     async def handle(self, command: CreatePharmacyCommand) -> PharmacyEntity:
-        if await self.pharmacy_repo.check_pharmacy_exists_by_title(command.title):
+        if await self.pharmacy_repository.check_pharmacy_exists_by_title(title=command.title):
             raise PharmacyByTitleAlreadyExistsException(title=command.title)
 
         title = Title(value=command.title)
@@ -26,6 +26,6 @@ class PharmacyHandler(CommandHandler[CreatePharmacyCommand, PharmacyEntity]):
 
         new_pharmacy = PharmacyEntity.create_pharmacy(title=title, description=description)
 
-        await self.pharmacy_repo.add_pharmacy(new_pharmacy)
+        await self.pharmacy_repository.add_pharmacy(new_pharmacy)
 
         return new_pharmacy

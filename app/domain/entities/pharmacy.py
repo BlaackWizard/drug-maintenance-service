@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Dict
 
 from ..events.pharmacy import NewPharmacyCreatedEvent
-from ..events.product import NewProductReceivedEvent
+from ..events.product import ProductAddedToPharmacyEvent
 from ..values.product import Price, Text, Title
 from .base import BaseEntity
 from .price import PriceEntity
@@ -28,15 +28,15 @@ class PharmacyEntity(BaseEntity):
         self.prices[product] = price_entity
 
         self.register_event(
-            NewProductReceivedEvent(
+            ProductAddedToPharmacyEvent(
                 product_oid=product.oid,
-                title=product.title.as_generic_type(),
-                description=product.description.as_generic_type(),
-                expiry_date=product.expiry_date.as_generic_type(),
-                image_url=product.image_url.as_generic_type(),
-                ingredients=product.ingredients.as_generic_type(),
-                manufacturer=product.manufacturer.as_generic_type(),
-                price=price.as_generic_type(),
+                title=product.title,
+                description=product.description,
+                expiry_date=product.expiry_date,
+                image_url=product.image_url,
+                ingredients=product.ingredients,
+                manufacturer=product.manufacturer,
+                price=price,
                 pharmacy_oid=self.oid,
             ),
         )

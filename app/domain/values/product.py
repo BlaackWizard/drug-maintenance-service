@@ -39,8 +39,8 @@ class ExpiresDate(BaseValueObject):
     value: datetime
 
     def validate(self):
-        if datetime.now() > self.value:
-            raise ExpiresDateException()
+        if self.value < datetime.now():
+            raise ExpiresDateException
 
     def as_generic_type(self) -> VT:
         return self.value

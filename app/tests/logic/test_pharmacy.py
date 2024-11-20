@@ -21,12 +21,12 @@ async def test_create_pharmacy_command_success(
     pharmacy: PharmacyEntity
     pharmacy, *_ = await mediator.handle_command(
         CreatePharmacyCommand(
-            title=title.as_generic_type(),
-            description=description.as_generic_type(),
+            title=title,
+            description=description,
         ),
     )
 
-    assert await pharmacy_repository.check_pharmacy_exists_by_title(title=pharmacy.title)
+    assert await pharmacy_repository.check_pharmacy_exists_by_title(title=pharmacy.title.as_generic_type())
 
 
 @pytest.mark.asyncio
@@ -38,7 +38,7 @@ async def test_create_pharmacy_command_title_already_exists(
     title = Title(value=faker.text())
     description = Text(value=faker.text())
 
-    pharmacy = PharmacyEntity(title=title.as_generic_type(), description=description.as_generic_type())
+    pharmacy = PharmacyEntity(title=title, description=description)
     await pharmacy_repository.add_pharmacy(pharmacy)
 
     assert pharmacy in pharmacy_repository._saved_pharmacies
