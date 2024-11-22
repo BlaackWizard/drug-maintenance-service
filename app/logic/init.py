@@ -1,10 +1,13 @@
 from functools import lru_cache
 
+from motor.motor_asyncio import AsyncIOMotorClient
 from punq import Container, Scope
 
-from ..infra.repositories.pharmacy import BasePharmacyRepo, MemoryPharmacyRepo
-from ..infra.repositories.products import BaseProductRepo, MemoryProductRepo
-from .commands.pharmacy import CreatePharmacyCommand, PharmacyHandler  # noqa
+from ..infra.repositories.base import BasePharmacyRepo, BaseProductRepo
+from ..infra.repositories.mongo import MongoDBPharmacyRepo, MongoDBProductRepo
+from ..settings.config import Config
+from .commands.pharmacy import (AddProductCommand, AddProductHandler,  # noqa
+                                CreatePharmacyCommand, PharmacyHandler)
 from .commands.products import CreateProductCommand  # noqa
 from .commands.products import CreateProductCommandHandler  # noqa
 from .mediator import Mediator
@@ -17,10 +20,10 @@ def init_container():
 
 def _init_container() -> Container:
     container = Container()
-    container.register(BasePharmacyRepo, MemoryPharmacyRepo, scope=Scope.singleton)
-    container.register(BaseProductRepo, MemoryProductRepo, scope=Scope.singleton)
+    container.register(Config, instance=Config(), scope=Scope.singleton)
     container.register(CreateProductCommandHandler)
     container.register(PharmacyHandler)
+    container.register(AddProductHandler)
 
     def init_mediator():
         mediator = Mediator()
@@ -32,8 +35,32 @@ def _init_container() -> Container:
             CreateProductCommand,
             [container.resolve(CreateProductCommandHandler)],
         )
+        mediator.register_command(
+            AddProductCommand,
+            [container.resolve(AddProductHandler)],
+        )
         return mediator
 
+    def init_pharmacy_mongodb_repository():
+        config: Config = container.resolve(Config)
+        client = AsyncIOMotorClient(config.mongodb_connection_uri, serverSelectionTimeoutMS=3000)
+        return MongoDBPharmacyRepo(
+            mongo_db_client=client,
+            mongo_db_db_name=config.mongodb_pharmacy_database,
+            mongo_db_collection_name=config.mongodb_pharmacy_collection,  # Коллекция для аптек
+        )
+
+    def init_product_mongodb_repository():
+        config: Config = container.resolve(Config)
+        client = AsyncIOMotorClient(config.mongodb_connection_uri, serverSelectionTimeoutMS=3000)
+        return MongoDBProductRepo(
+            mongo_db_client=client,
+            mongo_db_db_name=config.mongodb_pharmacy_database,
+            mongo_db_collection_name=config.mongodb_product_collection,
+        )
+
+    container.register(BasePharmacyRepo, factory=init_pharmacy_mongodb_repository, scope=Scope.singleton)
+    container.register(BaseProductRepo, factory=init_product_mongodb_repository, scope=Scope.singleton)
     container.register(Mediator, factory=init_mediator)
 
     return container

@@ -18,4 +18,3 @@ class ProductExpiresDateException(LogicException):
     @property
     def message(self):
         return 'Товар уже просрочен!'
-

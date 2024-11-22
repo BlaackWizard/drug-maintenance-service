@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
-from .products.handlers import router as pharmacy_router
+from .pharmacy.handlers import router as pharmacy_router
+from .products.handlers import router as product_router
 
 
 def create_app() -> FastAPI:
@@ -11,5 +12,6 @@ def create_app() -> FastAPI:
         debug=True,
     )
     app.include_router(pharmacy_router, prefix='/pharmacy')
+    app.include_router(product_router, prefix='/products')
 
     return app

@@ -12,7 +12,7 @@ class NewProductReceivedEvent(BaseEvent):
     expiry_date: ExpiresDate
     image_url: Text
     ingredients: Text
-    manufacturer: Text
+    manufacturer: Title
 
 
 @dataclass
@@ -23,6 +23,6 @@ class ProductAddedToPharmacyEvent(BaseEvent):
     expiry_date: ExpiresDate
     image_url: Text
     ingredients: Text
-    manufacturer: Text
+    manufacturer: Title
     price: Price
     pharmacy_oid: str

@@ -13,7 +13,7 @@ from .product import ProductEntity
 class PharmacyEntity(BaseEntity):
     title: Title
     description: Text
-    products: set['ProductEntity'] = field(default_factory=set, kw_only=True)
+    products: list['ProductEntity'] = field(default_factory=list, kw_only=True)
     prices: Dict['ProductEntity', 'PriceEntity'] = field(default_factory=dict, kw_only=True)
 
     def add_product(self, product: ProductEntity, price: Price):

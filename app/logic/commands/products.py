@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from ..exceptions.products import ProductWithThatTitleAlreadyExistsException, ProductExpiresDateException
 from ...domain.entities.product import ProductEntity
-from ...domain.values.product import Title, Text, ExpiresDate
-from ...infra.repositories.products import BaseProductRepo
+from ...domain.values.product import ExpiresDate, Text, Title
+from ...infra.repositories.base import BaseProductRepo
 from ...logic.commands.base import BaseCommand, CommandHandler
+from ..exceptions.products import ProductWithThatTitleAlreadyExistsException
 
 
 @dataclass(frozen=True)
@@ -40,7 +40,7 @@ class CreateProductCommandHandler(CommandHandler[CreateProductCommand, ProductEn
             expiry_date=expiry_date,
             image_url=image_url,
             ingredients=ingredients,
-            manufacturer=manufacturer
+            manufacturer=manufacturer,
         )
         await self.product_repository.add_product(new_product)
 
