@@ -1,11 +1,10 @@
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, List
 
 from ..events.pharmacy import NewPharmacyCreatedEvent
 from ..events.product import ProductAddedToPharmacyEvent
 from ..values.product import Price, Text, Title
 from .base import BaseEntity
-from .price import PriceEntity
 from .product import ProductEntity
 
 
@@ -13,19 +12,21 @@ from .product import ProductEntity
 class PharmacyEntity(BaseEntity):
     title: Title
     description: Text
-    products: list['ProductEntity'] = field(default_factory=list, kw_only=True)
-    prices: Dict['ProductEntity', 'PriceEntity'] = field(default_factory=dict, kw_only=True)
+    products: List['ProductEntity'] = field(default_factory=list, kw_only=True)
+    prices: Dict['ProductEntity', Price] = field(default_factory=dict, kw_only=True)
 
-    def add_product(self, product: ProductEntity, price: Price):
+    def add_product(self, product: ProductEntity):
+        """
+        Добавление продукта в аптеку без указания цены.
+        """
+        self.products.append(product)
 
-        price_entity = PriceEntity(
-            product=product,
-            pharmacy=self,
-            price=price,
-        )
-
-        self.products.add(product)
-        self.prices[product] = price_entity
+    def add_product_with_price(self, product: ProductEntity, price: Price):
+        """
+        Добавление продукта в аптеку с указанием цены.
+        """
+        self.products.append(product)
+        self.prices[product] = price
 
         self.register_event(
             ProductAddedToPharmacyEvent(
@@ -47,8 +48,8 @@ class PharmacyEntity(BaseEntity):
         new_pharmacy.register_event(
             NewPharmacyCreatedEvent(
                 pharmacy_oid=new_pharmacy.oid,
-                title=new_pharmacy.title.as_generic_type(),
-                description=new_pharmacy.description.as_generic_type(),
+                title=new_pharmacy.title,
+                description=new_pharmacy.description,
             ),
         )
         return new_pharmacy

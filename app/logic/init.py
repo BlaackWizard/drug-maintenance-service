@@ -6,10 +6,11 @@ from punq import Container, Scope
 from ..infra.repositories.base import BasePharmacyRepo, BaseProductRepo
 from ..infra.repositories.mongo import MongoDBPharmacyRepo, MongoDBProductRepo
 from ..settings.config import Config
-from .commands.pharmacy import (AddProductCommand, AddProductHandler,  # noqa
-                                CreatePharmacyCommand, PharmacyHandler)
-from .commands.products import CreateProductCommand  # noqa
+from .commands.pharmacy import CreatePharmacyCommand, PharmacyHandler  # noqa
+from .commands.products import AddProductToPharmacyCommand  # noqa
 from .commands.products import CreateProductCommandHandler  # noqa
+from .commands.products import (AddProductToPharmacyHandler,  # noqa
+                                CreateProductCommand)
 from .mediator import Mediator
 
 
@@ -23,7 +24,7 @@ def _init_container() -> Container:
     container.register(Config, instance=Config(), scope=Scope.singleton)
     container.register(CreateProductCommandHandler)
     container.register(PharmacyHandler)
-    container.register(AddProductHandler)
+    container.register(AddProductToPharmacyHandler)
 
     def init_mediator():
         mediator = Mediator()
@@ -36,8 +37,8 @@ def _init_container() -> Container:
             [container.resolve(CreateProductCommandHandler)],
         )
         mediator.register_command(
-            AddProductCommand,
-            [container.resolve(AddProductHandler)],
+            AddProductToPharmacyCommand,
+            [container.resolve(AddProductToPharmacyHandler)],
         )
         return mediator
 
@@ -47,7 +48,7 @@ def _init_container() -> Container:
         return MongoDBPharmacyRepo(
             mongo_db_client=client,
             mongo_db_db_name=config.mongodb_pharmacy_database,
-            mongo_db_collection_name=config.mongodb_pharmacy_collection,  # Коллекция для аптек
+            mongo_db_collection_name=config.mongodb_pharmacy_collection,
         )
 
     def init_product_mongodb_repository():

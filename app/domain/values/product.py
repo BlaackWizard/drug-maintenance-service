@@ -43,7 +43,7 @@ class ExpiresDate(BaseValueObject):
             raise ExpiresDateException
 
     def as_generic_type(self) -> VT:
-        return self.value
+        return self.value.isoformat()
 
 
 @dataclass(frozen=True)

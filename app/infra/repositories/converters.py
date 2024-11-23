@@ -44,6 +44,7 @@ def convert_document_to_product(document: dict) -> ProductEntity:
         description=document['description'],
         manufacturer=document['manufacturer'],
         image_url=document['image_url'],
+        ingredients=document['ingredients'],
         expiry_date=document['expiry_date'],
         created_at=document['created_at'],
     )

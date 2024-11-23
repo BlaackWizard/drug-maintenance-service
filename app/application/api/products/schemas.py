@@ -1,7 +1,9 @@
 from datetime import datetime
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
+from ....domain.entities.pharmacy import PharmacyEntity
 from ....domain.entities.product import ProductEntity
 
 
@@ -33,4 +35,28 @@ class CreateProductResponseSchema(BaseModel):
             image_url=product.image_url.as_generic_type(),
             ingredients=product.ingredients.as_generic_type(),
             manufacturer=product.manufacturer.as_generic_type(),
+        )
+
+
+class AddProductToPharmacyRequestSchema(BaseModel):
+    product_oid: str
+    pharmacy_oid: str
+    price: float
+
+
+class AddProductToPharmacyResponseSchema(BaseModel):
+    oid: str
+    title: str
+    description: str
+    products: Optional[List[str]] = None
+    prices: Optional[Dict[str, float]] = None
+
+    @classmethod
+    def from_entity(cls, pharmacy: PharmacyEntity) -> 'AddProductToPharmacyResponseSchema':
+        return cls(
+            oid=pharmacy.oid,
+            title=pharmacy.title,
+            description=pharmacy.description,
+            products=[product.oid for product in pharmacy.products],
+            prices={product.oid: price.as_generic_type() for product, price in pharmacy.prices.items()},
         )

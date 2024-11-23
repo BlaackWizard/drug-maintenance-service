@@ -1,13 +1,13 @@
 from punq import Container, Scope
 
-from ..infra.repositories.pharmacy import BasePharmacyRepo, MemoryPharmacyRepo
-from ..infra.repositories.products import BaseProductRepo, MemoryProductRepo
+from ..infra.repositories.base import BasePharmacyRepo, BaseProductRepo
+from ..infra.repositories.mongo import MongoDBPharmacyRepo, MongoDBProductRepo
 from ..logic.init import _init_container
 
 
 def init_dummy_container() -> Container:
     container = _init_container()
-    container.register(BasePharmacyRepo, MemoryPharmacyRepo, scope=Scope.singleton)
-    container.register(BaseProductRepo, MemoryProductRepo, scope=Scope.singleton)
+    container.register(BasePharmacyRepo, MongoDBPharmacyRepo, scope=Scope.singleton)
+    container.register(BaseProductRepo, MongoDBProductRepo, scope=Scope.singleton)
 
     return container

@@ -30,7 +30,11 @@ class MongoDBPharmacyRepo(BasePharmacyRepo):
 
     async def get_pharmacy_by_oid(self, oid: str) -> PharmacyEntity:
         collection = self._get_pharmacy_collection()
-        pharmacy_document = collection.find_one(filter={"oid": oid})
+
+        pharmacy_document = await collection.find_one({"oid": oid})
+
+        if not pharmacy_document:
+            raise ValueError('Pharmacy not found')
 
         pharmacy_entity = convert_document_to_pharmacy(pharmacy_document)
 
@@ -55,10 +59,12 @@ class MongoDBProductRepo(BaseProductRepo):
         await collection.insert_one(convert_product_to_document(product))
 
     async def get_product_by_oid(self, oid: str) -> ProductEntity:
-
         collection = self._get_product_collection()
 
         product_document = await collection.find_one({'oid': oid})
+
+        if not product_document:
+            raise ValueError('Product not found')
 
         product_entity = convert_document_to_product(product_document)
 
