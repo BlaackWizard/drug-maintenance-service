@@ -38,18 +38,12 @@ class CreateProductResponseSchema(BaseModel):
         )
 
 
-class AddProductToPharmacyRequestSchema(BaseModel):
-    product_oid: str
-    pharmacy_oid: str
-    price: float
-
-
 class AddProductToPharmacyResponseSchema(BaseModel):
     oid: str
     title: str
     description: str
-    products: Optional[List[str]] = None
-    prices: Optional[Dict[str, float]] = None
+    products: Optional[List[str]]
+    prices: Optional[List[Dict[str, float]]]
 
     @classmethod
     def from_entity(cls, pharmacy: PharmacyEntity) -> 'AddProductToPharmacyResponseSchema':
@@ -57,6 +51,20 @@ class AddProductToPharmacyResponseSchema(BaseModel):
             oid=pharmacy.oid,
             title=pharmacy.title,
             description=pharmacy.description,
-            products=[product.oid for product in pharmacy.products],
-            prices={product.oid: price.as_generic_type() for product, price in pharmacy.prices.items()},
+            products=pharmacy.products,
+            prices=pharmacy.prices
         )
+class UpdateProductRequestSchema(BaseModel):
+    title: str
+    description: str
+    expiry_date: datetime
+    image_url: str
+    ingredients: str
+    manufacturer: str
+
+
+class AddProductToPharmacyRequestSchema(BaseModel):
+    product_oid: str
+    pharmacy_oid: str
+    price: float
+

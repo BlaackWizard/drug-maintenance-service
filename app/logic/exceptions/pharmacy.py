@@ -18,3 +18,11 @@ class PharmacyOrProductNotExistsException(LogicException):
     @property
     def message(self):
         return 'Не удалось найти товар или аптеку, проверьте ввели вы правильно id товара и аптеки.'
+
+
+@dataclass(eq=False)
+class PharmacyNotFoundException(LogicException):
+
+    @property
+    def message(self):
+        return 'Аптека не найдена'

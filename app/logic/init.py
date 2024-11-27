@@ -6,8 +6,11 @@ from punq import Container, Scope
 from ..infra.repositories.base import BasePharmacyRepo, BaseProductRepo
 from ..infra.repositories.mongo import MongoDBPharmacyRepo, MongoDBProductRepo
 from ..settings.config import Config
-from .commands.pharmacy import CreatePharmacyCommand, PharmacyHandler  # noqa
-from .commands.products import AddProductToPharmacyCommand  # noqa
+from .commands.pharmacy import CreatePharmacyCommand, PharmacyHandler, GetPharmacyByOidCommand, \
+    GetPharmacyByOidHandler, UpdatePharmacyHandler, UpdatePharmacyCommand, ChangeProductPriceHandler, \
+    ChangeProductPriceCommand, AddProductWithPriceHandler, AddProductWithPriceCommand  # noqa
+from .commands.products import AddProductToPharmacyCommand, GetProductByOidHandler, GetProductByOidCommand, \
+    UpdateProductHandler, UpdateProductCommand  # noqa
 from .commands.products import CreateProductCommandHandler  # noqa
 from .commands.products import (AddProductToPharmacyHandler,  # noqa
                                 CreateProductCommand)
@@ -25,6 +28,12 @@ def _init_container() -> Container:
     container.register(CreateProductCommandHandler)
     container.register(PharmacyHandler)
     container.register(AddProductToPharmacyHandler)
+    container.register(GetProductByOidHandler)
+    container.register(GetPharmacyByOidHandler)
+    container.register(UpdatePharmacyHandler)
+    container.register(UpdateProductHandler)
+    container.register(ChangeProductPriceHandler)
+    container.register(AddProductWithPriceHandler)
 
     def init_mediator():
         mediator = Mediator()
@@ -39,6 +48,30 @@ def _init_container() -> Container:
         mediator.register_command(
             AddProductToPharmacyCommand,
             [container.resolve(AddProductToPharmacyHandler)],
+        )
+        mediator.register_command(
+            GetProductByOidCommand,
+            [container.resolve(GetProductByOidHandler)]
+        )
+        mediator.register_command(
+            GetPharmacyByOidCommand,
+            [container.resolve(GetPharmacyByOidHandler)]
+        ),
+        mediator.register_command(
+            UpdatePharmacyCommand,
+            [container.resolve(UpdatePharmacyHandler)]
+        )
+        mediator.register_command(
+            UpdateProductCommand,
+            [container.resolve(UpdateProductHandler)]
+        )
+        mediator.register_command(
+            ChangeProductPriceCommand,
+            [container.resolve(ChangeProductPriceHandler)]
+        ),
+        mediator.register_command(
+            AddProductWithPriceCommand,
+            [container.resolve(AddProductWithPriceHandler)]
         )
         return mediator
 

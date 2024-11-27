@@ -1,11 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from ....domain.exceptions.base import ApplicationException
-from ....logic.commands.pharmacy import CreatePharmacyCommand
+from ....domain.values.product import Title, Text, Price
+from ....logic.commands.pharmacy import CreatePharmacyCommand, GetPharmacyByOidCommand, UpdatePharmacyCommand, \
+    ChangeProductPriceCommand
 from ....logic.init import init_container
 from ....logic.mediator import Mediator
 from ..schemas import ErrorSchema
-from .schemas import CreatePharmacyRequestSchema, CreatePharmacyResponseSchema
+from .schemas import CreatePharmacyRequestSchema, CreatePharmacyResponseSchema, UpdatePharmacyRequestSchema, \
+    ChangeProductPriceRequestSchema
 
 router = APIRouter(
     tags=['Pharmacy'],
@@ -29,11 +32,109 @@ async def create_pharmacy_handler(schema: CreatePharmacyRequestSchema, container
     try:
         pharmacy, *_ = await mediator.handle_command(
             CreatePharmacyCommand(
-                title=schema.title,
-                description=schema.description,
+                title=Title(schema.title),
+                description=Text(schema.description),
             ),
         )
     except ApplicationException as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
 
     return CreatePharmacyResponseSchema.from_entity(pharmacy)
+
+
+@router.get(
+    '/get-pharmacy',
+    status_code=status.HTTP_200_OK,
+    description="Эндпоинт ищет аптеку по oid, если его нет то возвращается 400 ошибка",
+)
+async def get_pharmacy_by_oid(
+    pharmacy_oid: str,
+    container=Depends(init_container)
+):
+    '''Ищет аптеку по oid'''
+    mediator: Mediator = container.resolve(Mediator)
+    try:
+        pharmacy, *_ = await mediator.handle_command(
+            GetPharmacyByOidCommand(
+                pharmacy_oid=pharmacy_oid,
+            )
+        )
+    except ApplicationException as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
+
+    return CreatePharmacyResponseSchema(
+        oid=pharmacy.oid,
+        title=pharmacy.title,
+        description=pharmacy.description,
+        products=pharmacy.products,
+        prices=pharmacy.prices,
+    )
+
+
+@router.post(
+    '/update-pharmacy',
+    status_code=status.HTTP_202_ACCEPTED,
+    description="Эндпоинт обновляет данные об аптеке"
+)
+async def update_pharmacy(
+    pharmacy_oid: str,
+    schema: UpdatePharmacyRequestSchema,
+    container=Depends(init_container),
+):
+    '''Обновляет данные об аптеке'''
+    mediator: Mediator = container.resolve(Mediator)
+
+    try:
+
+        pharmacy, *_ = await mediator.handle_command(
+            UpdatePharmacyCommand(
+                pharmacy_oid=pharmacy_oid,
+                title=Title(schema.title),
+                description=Text(schema.description),
+            )
+        )
+    except ApplicationException as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
+
+    return CreatePharmacyResponseSchema(
+        oid=pharmacy.oid,
+        title=pharmacy.title,
+        description=pharmacy.description,
+        products=pharmacy.products,
+        prices=pharmacy.prices,
+    )
+
+
+@router.post(
+    '/change-price-product',
+    description="Эндпоинт изменения цены товара из аптеки, если нет товара или аптеки то возвращается 400 ошибка",
+    responses={
+        status.HTTP_201_CREATED: {'model': CreatePharmacyResponseSchema},
+        status.HTTP_400_BAD_REQUEST: {'error': ErrorSchema}
+    }
+)
+async def change_price_product(
+    schema: ChangeProductPriceRequestSchema,
+    container=Depends(init_container)
+):
+    mediator: Mediator = container.resolve(Mediator)
+
+    try:
+        pharmacy, *_ = await mediator.handle_command(
+            ChangeProductPriceCommand(
+                pharmacy_oid=schema.pharmacy_oid,
+                product_oid=schema.product_oid,
+                price=schema.price
+            )
+        )
+    except ApplicationException as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
+
+    return CreatePharmacyResponseSchema(
+        oid=pharmacy.oid,
+        title=pharmacy.title,
+        description=pharmacy.description,
+        products=pharmacy.products,
+        prices=pharmacy.prices,
+    )
+

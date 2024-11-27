@@ -26,6 +26,17 @@ def convert_pharmacy_to_document(pharmacy: PharmacyEntity) -> dict:
     }
 
 
+def convert_pharmacy_to_document_without_generic_type(pharmacy: PharmacyEntity) -> dict:
+    return {
+        'oid': pharmacy.oid,
+        'title': pharmacy.title,
+        'description': pharmacy.description,
+        'products': pharmacy.products,
+        'prices': pharmacy.prices,
+        'created_at': pharmacy.created_at,
+    }
+
+
 def convert_document_to_pharmacy(document: dict) -> PharmacyEntity:
     return PharmacyEntity(
         oid=document['oid'],

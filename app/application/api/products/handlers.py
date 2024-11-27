@@ -1,17 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.domain.exceptions.base import ApplicationException
+from ....domain.values.product import Title, Text, ExpiresDate
+from ....logic.commands.pharmacy import AddProductWithPriceHandler, AddProductWithPriceCommand
 
 from ....logic.commands.products import (AddProductToPharmacyCommand,
-                                         CreateProductCommand)
+                                         CreateProductCommand, GetProductByOidCommand, UpdateProductCommand)
 from ....logic.init import init_container
 from ....logic.mediator import Mediator
 from ..schemas import ErrorSchema
 from .schemas import (AddProductToPharmacyRequestSchema,
                       AddProductToPharmacyResponseSchema,
-                      CreateProductRequestSchema, CreateProductResponseSchema)
+                      CreateProductRequestSchema, CreateProductResponseSchema, UpdateProductRequestSchema)
 
-router = APIRouter(tags=['/products'])
+router = APIRouter(tags=['Products'])
 
 
 @router.post(
@@ -64,7 +66,7 @@ async def add_product_to_pharmacy_handler(
 
     try:
         pharmacy, *_ = await mediator.handle_command(
-            AddProductToPharmacyCommand(
+            AddProductWithPriceCommand(
                 product_oid=schema.product_oid,
                 pharmacy_oid=schema.pharmacy_oid,
                 price=schema.price,
@@ -74,3 +76,74 @@ async def add_product_to_pharmacy_handler(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
 
     return AddProductToPharmacyResponseSchema.from_entity(pharmacy)
+
+
+@router.get(
+    '/get-product',
+    status_code=status.HTTP_200_OK,
+    description="Эндпоинт который ищет товар по oid, если его нет возвращается 400 ошибка",
+)
+async def get_product_by_oid(
+    product_oid: str,
+    container=Depends(init_container)
+) -> CreateProductResponseSchema:
+    '''Ищет товар по oid'''
+    mediator: Mediator = container.resolve(Mediator)
+
+    try:
+        product, *_ = await mediator.handle_command(
+            GetProductByOidCommand(
+                product_oid=product_oid
+            )
+        )
+    except ApplicationException as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
+
+    return CreateProductResponseSchema(
+        product_oid=product.oid,
+        title=product.title,
+        description=product.description,
+        expiry_date=product.expiry_date,
+        image_url=product.image_url,
+        manufacturer=product.manufacturer,
+        ingredients=product.ingredients,
+    )
+
+@router.post(
+    '/update-product',
+    status_code=status.HTTP_202_ACCEPTED,
+    description="Эндпоинт обновляет данные об товаре"
+)
+async def update_product(
+    product_oid: str,
+    schema: UpdateProductRequestSchema,
+    container=Depends(init_container)
+):
+    mediator: Mediator = container.resolve(Mediator)
+
+    try:
+        product, *_ = await mediator.handle_command(
+            UpdateProductCommand(
+                oid=product_oid,
+                title=Title(schema.title),
+                description=Text(schema.description),
+                expiry_date=ExpiresDate(schema.expiry_date),
+                image_url=Text(schema.image_url),
+                ingredients=Text(schema.ingredients),
+                manufacturer=Title(schema.manufacturer)
+            )
+        )
+
+    except ApplicationException as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
+
+    return CreateProductResponseSchema(
+        product_oid=product.oid,
+        title=product.title,
+        description=product.description,
+        expiry_date=product.expiry_date,
+        image_url=product.image_url,
+        manufacturer=product.manufacturer,
+        ingredients=product.ingredients,
+    )
+

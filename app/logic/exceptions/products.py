@@ -18,3 +18,11 @@ class ProductExpiresDateException(LogicException):
     @property
     def message(self):
         return 'Товар уже просрочен!'
+
+
+@dataclass(eq=False)
+class ProductNotFoundException(LogicException):
+
+    @property
+    def message(self):
+        return 'Товар не найден'

@@ -24,5 +24,5 @@ class ProductAddedToPharmacyEvent(BaseEvent):
     image_url: Text
     ingredients: Text
     manufacturer: Title
-    price: Price
+    price: float
     pharmacy_oid: str

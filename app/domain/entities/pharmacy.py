@@ -13,7 +13,7 @@ class PharmacyEntity(BaseEntity):
     title: Title
     description: Text
     products: List['ProductEntity'] = field(default_factory=list, kw_only=True)
-    prices: Dict['ProductEntity', Price] = field(default_factory=dict, kw_only=True)
+    prices: List[dict] = field(default_factory=list, kw_only=True)
 
     def add_product(self, product: ProductEntity):
         """
@@ -21,12 +21,12 @@ class PharmacyEntity(BaseEntity):
         """
         self.products.append(product)
 
-    def add_product_with_price(self, product: ProductEntity, price: Price):
+    def add_product_with_price(self, product: ProductEntity, price: float):
         """
         Добавление продукта в аптеку с указанием цены.
         """
         self.products.append(product)
-        self.prices[product] = price
+        self.prices.append({product: price})
 
         self.register_event(
             ProductAddedToPharmacyEvent(

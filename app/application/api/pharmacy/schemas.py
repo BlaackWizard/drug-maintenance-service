@@ -1,8 +1,9 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 from pydantic import BaseModel
 
 from app.domain.entities.pharmacy import PharmacyEntity
+from app.domain.values.product import Title, Text, Price
 
 
 class CreatePharmacyRequestSchema(BaseModel):
@@ -14,8 +15,8 @@ class CreatePharmacyResponseSchema(BaseModel):
     oid: str
     title: str
     description: str
-    products: Optional[List[str]] = None
-    prices: Optional[Dict[str, float]] = None
+    products: List[Dict[str, Any]] = None
+    prices:  List[Dict[str, Any]] = None
 
     @classmethod
     def from_entity(cls, pharmacy: PharmacyEntity) -> 'CreatePharmacyResponseSchema':
@@ -26,3 +27,15 @@ class CreatePharmacyResponseSchema(BaseModel):
             products=pharmacy.products,
             prices=pharmacy.prices,
         )
+
+
+class UpdatePharmacyRequestSchema(BaseModel):
+    title: str
+    description: str
+
+
+class ChangeProductPriceRequestSchema(BaseModel):
+    pharmacy_oid: str
+    product_oid: str
+    price: float
+
