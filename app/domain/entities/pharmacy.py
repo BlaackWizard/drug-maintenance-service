@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
-from typing import Dict, List
+from typing import List
 
 from ..events.pharmacy import NewPharmacyCreatedEvent
 from ..events.product import ProductAddedToPharmacyEvent
-from ..values.product import Price, Text, Title
+from ..values.product import Text, Title
 from .base import BaseEntity
 from .product import ProductEntity
 

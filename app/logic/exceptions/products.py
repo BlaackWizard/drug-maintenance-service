@@ -26,3 +26,4 @@ class ProductNotFoundException(LogicException):
     @property
     def message(self):
         return 'Товар не найден'
+

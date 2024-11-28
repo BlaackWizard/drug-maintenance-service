@@ -1,12 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from .base import CT, CR
 from ...domain.entities.pharmacy import PharmacyEntity
 from ...domain.entities.product import ProductEntity
 from ...domain.values.product import ExpiresDate, Price, Text, Title
 from ...infra.repositories.base import BasePharmacyRepo, BaseProductRepo
-from ...infra.repositories.converters import convert_document_to_product
 from ...logic.commands.base import BaseCommand, CommandHandler
 from ..exceptions.pharmacy import PharmacyOrProductNotExistsException
 from ..exceptions.products import ProductWithThatTitleAlreadyExistsException
@@ -114,8 +112,22 @@ class UpdateProductHandler(CommandHandler[UpdateProductCommand, ProductEntity]):
             image_url=command.image_url,
             manufacturer=command.manufacturer,
             expiry_date=command.expiry_date,
-            ingredients=command.ingredients
+            ingredients=command.ingredients,
         )
         product_entity = await self.product_repository.get_product_by_oid(command.oid)
         return product_entity
 
+
+@dataclass(frozen=True)
+class DeleteProductCommand(BaseCommand):
+    product_oid: str
+
+
+@dataclass(frozen=True)
+class DeleteProductHandler(CommandHandler[DeleteProductCommand, None]):
+    product_repository: BaseProductRepo
+
+    async def handle(self, command: DeleteProductCommand) -> None:
+        await self.product_repository.delete_product(
+            product_oid=command.product_oid,
+        )

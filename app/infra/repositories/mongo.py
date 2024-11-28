@@ -1,19 +1,17 @@
 from dataclasses import dataclass
-from datetime import datetime
 
 from motor.core import AgnosticClient
 
 from ...domain.entities.pharmacy import PharmacyEntity
 from ...domain.entities.product import ProductEntity
-from ...domain.values.product import Title, Text, ExpiresDate, Price
+from ...domain.values.product import ExpiresDate, Price, Text, Title
 from ...infra.repositories.converters import (convert_document_to_pharmacy,
                                               convert_document_to_product,
                                               convert_pharmacy_to_document,
-                                              convert_product_to_document,
-                                              convert_pharmacy_to_document_without_generic_type)
-from .base import BasePharmacyRepo, BaseProductRepo
+                                              convert_product_to_document)
 from ...logic.exceptions.pharmacy import PharmacyNotFoundException
 from ...logic.exceptions.products import ProductNotFoundException
+from .base import BasePharmacyRepo, BaseProductRepo
 
 
 @dataclass
@@ -55,9 +53,13 @@ class MongoDBPharmacyRepo(BasePharmacyRepo):
 
         await collection.update_one(
                 {"oid": oid},
-                {"$set": {"title": title.as_generic_type(),
-                          "description": description.as_generic_type()}}
-            )
+                {
+                    "$set": {
+                        "title": title.as_generic_type(),
+                        "description": description.as_generic_type(),
+                    },
+                },
+        )
 
     async def add_product_to_pharmacy(self, pharmacy_oid: str, product_oid: str, price: Price):
         collection = self._get_pharmacy_collection()
@@ -76,14 +78,14 @@ class MongoDBPharmacyRepo(BasePharmacyRepo):
 
         await collection.update_one(
             {"oid": pharmacy_oid},
-            {"$push": {"prices": {"product_oid": product_oid, "price": price.as_generic_type()}}}
+            {"$push": {"prices": {"product_oid": product_oid, "price": price.as_generic_type()}}},
         )
 
     async def update_product_price_in_pharmacy(
             self,
             pharmacy_oid: str,
             product_oid: str,
-            price: Price
+            price: Price,
     ):
         collection = self._get_pharmacy_collection()
         pharmacy_document = await collection.find_one({"oid": pharmacy_oid})
@@ -91,12 +93,49 @@ class MongoDBPharmacyRepo(BasePharmacyRepo):
         if not pharmacy_document:
             raise PharmacyNotFoundException
 
-        if product_oid not in pharmacy_document['prices']:
+        product_exists = any(item['product_oid'] == product_oid for item in pharmacy_document['prices'])
+        if not product_exists:
             raise ProductNotFoundException
 
         await collection.update_one(
             {"oid": pharmacy_oid, "prices.product_oid": product_oid},
-            {"$set": {"prices.$.price": price.as_generic_type()}}
+            {"$set": {"prices.$.price": price.as_generic_type()}},
+        )
+
+    async def delete_product_in_pharmacy(
+            self,
+            pharmacy_oid: str,
+            product_oid: str,
+    ):
+        collection = self._get_pharmacy_collection()
+        pharmacy_document = await collection.find_one({"oid": pharmacy_oid})
+
+        if not pharmacy_document:
+            raise PharmacyNotFoundException
+
+        products_exists = any(item['product_oid'] == product_oid for item in pharmacy_document['prices'])
+
+        if not products_exists:
+            raise ProductNotFoundException
+
+        await collection.update_one(
+            {"oid": pharmacy_oid},
+            {"$pull": {"prices": {"product_oid": product_oid}}},
+        )
+
+    async def delete_pharmacy(
+            self,
+            pharmacy_oid: str,
+    ):
+        collection = self._get_pharmacy_collection()
+
+        pharmacy_exists = collection.find_one({"oid": pharmacy_oid})
+
+        if not pharmacy_exists:
+            raise PharmacyNotFoundException
+
+        await collection.delete_one(
+            {"oid": pharmacy_oid},
         )
 
 
@@ -147,13 +186,30 @@ class MongoDBProductRepo(BaseProductRepo):
 
         await collection.update_one(
             {"oid": oid},
-            {"$set": {
-                "title": title.as_generic_type(),
-                "description": description.as_generic_type(),
-                "expiry_date": expiry_date.as_generic_type(),
-                "image_url": image_url.as_generic_type(),
-                "ingredients": ingredients.as_generic_type(),
-                "manufacturer": manufacturer.as_generic_type(),
-            }}
+            {
+                "$set": {
+                    "title": title.as_generic_type(),
+                    "description": description.as_generic_type(),
+                    "expiry_date": expiry_date.as_generic_type(),
+                    "image_url": image_url.as_generic_type(),
+                    "ingredients": ingredients.as_generic_type(),
+                    "manufacturer": manufacturer.as_generic_type(),
+                },
+            },
+        )
+
+    async def delete_product(
+            self,
+            product_oid: str,
+    ):
+        collection = self._get_product_collection()
+
+        product_document = await collection.find_one({"oid": product_oid})
+
+        if not product_document:
+            raise ProductNotFoundException
+
+        await collection.delete_one(
+            {"oid": product_oid},
         )
 

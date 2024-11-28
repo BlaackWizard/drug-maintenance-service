@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 
 from app.domain.entities.pharmacy import PharmacyEntity
-from app.domain.values.product import Text, Title, Price
+from app.domain.values.product import Price, Text, Title
 from app.infra.repositories.base import BasePharmacyRepo, BaseProductRepo
-from app.logic.commands.base import BaseCommand, CommandHandler, CT, CR
-from app.logic.exceptions.pharmacy import PharmacyByTitleAlreadyExistsException, PharmacyNotFoundException
+from app.logic.commands.base import BaseCommand, CommandHandler
+from app.logic.exceptions.pharmacy import (
+    PharmacyByTitleAlreadyExistsException, PharmacyNotFoundException)
 from app.logic.exceptions.products import ProductNotFoundException
 
 
@@ -29,10 +30,9 @@ class PharmacyHandler(CommandHandler[CreatePharmacyCommand, PharmacyEntity]):
         if await self.pharmacy_repository.check_pharmacy_exists_by_title(title=command.title.as_generic_type()):
             raise PharmacyByTitleAlreadyExistsException(title=command.title.as_generic_type())
 
-
         new_pharmacy = PharmacyEntity.create_pharmacy(
             title=command.title,
-            description=command.description
+            description=command.description,
         )
 
         await self.pharmacy_repository.add_pharmacy(new_pharmacy)
@@ -90,7 +90,7 @@ class ChangeProductPriceHandler(CommandHandler[ChangeProductPriceCommand, Pharma
         await self.pharmacy_repository.update_product_price_in_pharmacy(
             pharmacy_oid=command.pharmacy_oid,
             product_oid=command.product_oid,
-            price=Price(command.price)
+            price=Price(command.price),
         )
         pharmacy_entity = await self.pharmacy_repository.get_pharmacy_by_oid(command.pharmacy_oid)
 
@@ -116,7 +116,39 @@ class AddProductWithPriceHandler(CommandHandler[AddProductWithPriceCommand, Phar
         await self.pharmacy_repository.add_product_to_pharmacy(
             pharmacy_oid=pharmacy.oid,
             product_oid=product.oid,
-            price=Price(command.price)
+            price=Price(command.price),
         )
 
         return pharmacy
+
+
+@dataclass(frozen=True)
+class DeleteProductFromPharmacyCommand(BaseCommand):
+    pharmacy_oid: str
+    product_oid: str
+
+
+@dataclass(frozen=True)
+class DeleteProductFromPharmacyHandler(CommandHandler[DeleteProductFromPharmacyCommand, None]):
+    pharmacy_repository: BasePharmacyRepo
+
+    async def handle(self, command: DeleteProductFromPharmacyCommand) -> None:
+        await self.pharmacy_repository.delete_product_in_pharmacy(
+            pharmacy_oid=command.pharmacy_oid,
+            product_oid=command.product_oid,
+        )
+
+
+@dataclass(frozen=True)
+class DeletePharmacyCommand(BaseCommand):
+    pharmacy_oid: str
+
+
+@dataclass(frozen=True)
+class DeletePharmacyHandler(CommandHandler[DeletePharmacyCommand, None]):
+    pharmacy_repository: BasePharmacyRepo
+
+    async def handle(self, command: DeletePharmacyCommand) -> None:
+        await self.pharmacy_repository.delete_pharmacy(
+            pharmacy_oid=command.pharmacy_oid,
+        )

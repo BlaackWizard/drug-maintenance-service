@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from datetime import datetime
 
 from app.domain.entities.pharmacy import PharmacyEntity
 from app.domain.entities.product import ProductEntity
-from app.domain.values.product import Title, Text, ExpiresDate, Price
+from app.domain.values.product import ExpiresDate, Price, Text, Title
 
 
 @dataclass
@@ -31,6 +30,13 @@ class BaseProductRepo(ABC):
             image_url: Text,
             ingredients: Text,
             manufacturer: Title,
+    ):
+        ...
+
+    @abstractmethod
+    async def delete_product(
+            self,
+            product_oid: str,
     ):
         ...
 
@@ -62,6 +68,21 @@ class BasePharmacyRepo(ABC):
             self,
             pharmacy_oid: str,
             product_oid: str,
-            price: Price
+            price: Price,
+    ):
+        ...
+
+    @abstractmethod
+    async def delete_product_in_pharmacy(
+            self,
+            pharmacy_oid: str,
+            product_oid: str,
+    ):
+        ...
+
+    @abstractmethod
+    async def delete_pharmacy(
+            self,
+            pharmacy_oid: str,
     ):
         ...

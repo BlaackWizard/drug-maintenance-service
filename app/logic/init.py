@@ -6,14 +6,25 @@ from punq import Container, Scope
 from ..infra.repositories.base import BasePharmacyRepo, BaseProductRepo
 from ..infra.repositories.mongo import MongoDBPharmacyRepo, MongoDBProductRepo
 from ..settings.config import Config
-from .commands.pharmacy import CreatePharmacyCommand, PharmacyHandler, GetPharmacyByOidCommand, \
-    GetPharmacyByOidHandler, UpdatePharmacyHandler, UpdatePharmacyCommand, ChangeProductPriceHandler, \
-    ChangeProductPriceCommand, AddProductWithPriceHandler, AddProductWithPriceCommand  # noqa
-from .commands.products import AddProductToPharmacyCommand, GetProductByOidHandler, GetProductByOidCommand, \
-    UpdateProductHandler, UpdateProductCommand  # noqa
+from .commands.pharmacy import AddProductWithPriceCommand  # noqa
+from .commands.pharmacy import AddProductWithPriceHandler  # noqa
+from .commands.pharmacy import DeletePharmacyCommand  # noqa
+from .commands.pharmacy import (ChangeProductPriceCommand,  # noqa
+                                ChangeProductPriceHandler,
+                                CreatePharmacyCommand, DeletePharmacyHandler,
+                                DeleteProductFromPharmacyCommand,
+                                DeleteProductFromPharmacyHandler,
+                                GetPharmacyByOidCommand,
+                                GetPharmacyByOidHandler, PharmacyHandler,
+                                UpdatePharmacyCommand, UpdatePharmacyHandler)
+from .commands.products import AddProductToPharmacyCommand  # noqa
+from .commands.products import AddProductToPharmacyHandler  # noqa
+from .commands.products import CreateProductCommand  # noqa
 from .commands.products import CreateProductCommandHandler  # noqa
-from .commands.products import (AddProductToPharmacyHandler,  # noqa
-                                CreateProductCommand)
+from .commands.products import DeleteProductCommand  # noqa
+from .commands.products import (DeleteProductHandler,  # noqa
+                                GetProductByOidCommand, GetProductByOidHandler,
+                                UpdateProductCommand, UpdateProductHandler)
 from .mediator import Mediator
 
 
@@ -34,6 +45,9 @@ def _init_container() -> Container:
     container.register(UpdateProductHandler)
     container.register(ChangeProductPriceHandler)
     container.register(AddProductWithPriceHandler)
+    container.register(DeleteProductFromPharmacyHandler)
+    container.register(DeleteProductHandler)
+    container.register(DeletePharmacyHandler)
 
     def init_mediator():
         mediator = Mediator()
@@ -51,27 +65,39 @@ def _init_container() -> Container:
         )
         mediator.register_command(
             GetProductByOidCommand,
-            [container.resolve(GetProductByOidHandler)]
+            [container.resolve(GetProductByOidHandler)],
         )
         mediator.register_command(
             GetPharmacyByOidCommand,
-            [container.resolve(GetPharmacyByOidHandler)]
-        ),
+            [container.resolve(GetPharmacyByOidHandler)],
+        )
         mediator.register_command(
             UpdatePharmacyCommand,
-            [container.resolve(UpdatePharmacyHandler)]
+            [container.resolve(UpdatePharmacyHandler)],
         )
         mediator.register_command(
             UpdateProductCommand,
-            [container.resolve(UpdateProductHandler)]
+            [container.resolve(UpdateProductHandler)],
         )
         mediator.register_command(
             ChangeProductPriceCommand,
-            [container.resolve(ChangeProductPriceHandler)]
-        ),
+            [container.resolve(ChangeProductPriceHandler)],
+        )
         mediator.register_command(
             AddProductWithPriceCommand,
-            [container.resolve(AddProductWithPriceHandler)]
+            [container.resolve(AddProductWithPriceHandler)],
+        )
+        mediator.register_command(
+            DeleteProductFromPharmacyCommand,
+            [container.resolve(DeleteProductFromPharmacyHandler)],
+        )
+        mediator.register_command(
+            DeleteProductCommand,
+            [container.resolve(DeleteProductHandler)],
+        )
+        mediator.register_command(
+            DeletePharmacyCommand,
+            [container.resolve(DeletePharmacyHandler)],
         )
         return mediator
 

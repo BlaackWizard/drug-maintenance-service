@@ -1,9 +1,8 @@
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List
 
 from pydantic import BaseModel
 
 from app.domain.entities.pharmacy import PharmacyEntity
-from app.domain.values.product import Title, Text, Price
 
 
 class CreatePharmacyRequestSchema(BaseModel):
@@ -39,3 +38,11 @@ class ChangeProductPriceRequestSchema(BaseModel):
     product_oid: str
     price: float
 
+
+class DeleteProductFromPharmacyRequestSchema(BaseModel):
+    pharmacy_oid: str
+    product_oid: str
+
+
+class DeletePharmacyRequestSchema(BaseModel):
+    pharmacy_oid: str

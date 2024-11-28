@@ -52,8 +52,10 @@ class AddProductToPharmacyResponseSchema(BaseModel):
             title=pharmacy.title,
             description=pharmacy.description,
             products=pharmacy.products,
-            prices=pharmacy.prices
+            prices=pharmacy.prices,
         )
+
+
 class UpdateProductRequestSchema(BaseModel):
     title: str
     description: str
@@ -68,3 +70,6 @@ class AddProductToPharmacyRequestSchema(BaseModel):
     pharmacy_oid: str
     price: float
 
+
+class DeleteProductRequestSchema(BaseModel):
+    product_oid: str
