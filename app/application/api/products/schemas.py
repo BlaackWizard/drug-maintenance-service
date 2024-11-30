@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -42,8 +41,7 @@ class AddProductToPharmacyResponseSchema(BaseModel):
     oid: str
     title: str
     description: str
-    products: Optional[List[str]]
-    prices: Optional[List[Dict[str, float]]]
+    products: list
 
     @classmethod
     def from_entity(cls, pharmacy: PharmacyEntity) -> 'AddProductToPharmacyResponseSchema':
@@ -52,7 +50,6 @@ class AddProductToPharmacyResponseSchema(BaseModel):
             title=pharmacy.title,
             description=pharmacy.description,
             products=pharmacy.products,
-            prices=pharmacy.prices,
         )
 
 
@@ -69,6 +66,7 @@ class AddProductToPharmacyRequestSchema(BaseModel):
     product_oid: str
     pharmacy_oid: str
     price: float
+    count: int
 
 
 class DeleteProductRequestSchema(BaseModel):

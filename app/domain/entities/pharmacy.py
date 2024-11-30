@@ -12,21 +12,13 @@ from .product import ProductEntity
 class PharmacyEntity(BaseEntity):
     title: Title
     description: Text
-    products: List['ProductEntity'] = field(default_factory=list, kw_only=True)
-    prices: List[dict] = field(default_factory=list, kw_only=True)
-
-    def add_product(self, product: ProductEntity):
-        """
-        Добавление продукта в аптеку без указания цены.
-        """
-        self.products.append(product)
+    products: List[dict] = field(default_factory=list, kw_only=True)
 
     def add_product_with_price(self, product: ProductEntity, price: float):
         """
         Добавление продукта в аптеку с указанием цены.
         """
-        self.products.append(product)
-        self.prices.append({product: price})
+        self.products.append({product: price})
 
         self.register_event(
             ProductAddedToPharmacyEvent(

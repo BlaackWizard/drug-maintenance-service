@@ -61,7 +61,7 @@ class MongoDBPharmacyRepo(BasePharmacyRepo):
                 },
         )
 
-    async def add_product_to_pharmacy(self, pharmacy_oid: str, product_oid: str, price: Price):
+    async def add_product_to_pharmacy(self, pharmacy_oid: str, product_oid: str, price: Price, count: int):
         collection = self._get_pharmacy_collection()
 
         pharmacy_document = await collection.find_one({"oid": pharmacy_oid})
@@ -69,16 +69,16 @@ class MongoDBPharmacyRepo(BasePharmacyRepo):
         if not pharmacy_document:
             raise PharmacyNotFoundException
 
-        prices = pharmacy_document.get('prices', [])
-        if not isinstance(prices, list):
+        products = pharmacy_document.get('products', [])
+        if not isinstance(products, list):
             raise ValueError("Field 'prices' is not an array in the pharmacy document.")
 
-        if any(p['product_oid'] == product_oid for p in prices):
+        if any(p['product_oid'] == product_oid for p in products):
             raise ProductNotFoundException
 
         await collection.update_one(
             {"oid": pharmacy_oid},
-            {"$push": {"prices": {"product_oid": product_oid, "price": price.as_generic_type()}}},
+            {"$push": {"products": {"product_oid": product_oid, "price": price.as_generic_type(), "count": count}}},
         )
 
     async def update_product_price_in_pharmacy(
@@ -99,7 +99,7 @@ class MongoDBPharmacyRepo(BasePharmacyRepo):
 
         await collection.update_one(
             {"oid": pharmacy_oid, "prices.product_oid": product_oid},
-            {"$set": {"prices.$.price": price.as_generic_type()}},
+            {"$set": {"products.$.price": price.as_generic_type()}},
         )
 
     async def delete_product_in_pharmacy(
@@ -113,14 +113,14 @@ class MongoDBPharmacyRepo(BasePharmacyRepo):
         if not pharmacy_document:
             raise PharmacyNotFoundException
 
-        products_exists = any(item['product_oid'] == product_oid for item in pharmacy_document['prices'])
+        products_exists = any(item['product_oid'] == product_oid for item in pharmacy_document['products'])
 
         if not products_exists:
             raise ProductNotFoundException
 
         await collection.update_one(
             {"oid": pharmacy_oid},
-            {"$pull": {"prices": {"product_oid": product_oid}}},
+            {"$pull": {"products": {"product_oid": product_oid}}},
         )
 
     async def delete_pharmacy(
@@ -212,4 +212,3 @@ class MongoDBProductRepo(BaseProductRepo):
         await collection.delete_one(
             {"oid": product_oid},
         )
-

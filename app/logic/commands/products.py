@@ -1,12 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from ...domain.entities.pharmacy import PharmacyEntity
 from ...domain.entities.product import ProductEntity
-from ...domain.values.product import ExpiresDate, Price, Text, Title
-from ...infra.repositories.base import BasePharmacyRepo, BaseProductRepo
+from ...domain.values.product import ExpiresDate, Text, Title
+from ...infra.repositories.base import BaseProductRepo
 from ...logic.commands.base import BaseCommand, CommandHandler
-from ..exceptions.pharmacy import PharmacyOrProductNotExistsException
 from ..exceptions.products import ProductWithThatTitleAlreadyExistsException
 
 
@@ -47,32 +45,6 @@ class CreateProductCommandHandler(CommandHandler[CreateProductCommand, ProductEn
         await self.product_repository.add_product(new_product)
 
         return new_product
-
-
-@dataclass(frozen=True)
-class AddProductToPharmacyCommand(BaseCommand):
-    product_oid: str
-    pharmacy_oid: str
-    price: float
-
-
-@dataclass(frozen=True)
-class AddProductToPharmacyHandler(CommandHandler[AddProductToPharmacyCommand, PharmacyEntity]):
-    pharmacy_repository: BasePharmacyRepo
-    product_repository: BaseProductRepo
-
-    async def handle(self, command: AddProductToPharmacyCommand) -> PharmacyEntity:
-        pharmacy = await self.pharmacy_repository.get_pharmacy_by_oid(command.pharmacy_oid)
-        product = await self.product_repository.get_product_by_oid(command.product_oid)
-
-        if not product or not pharmacy:
-            raise PharmacyOrProductNotExistsException
-
-        price = Price(command.price)
-
-        pharmacy.add_product_with_price(product, price)
-
-        return pharmacy
 
 
 @dataclass(frozen=True)

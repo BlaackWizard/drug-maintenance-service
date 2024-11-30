@@ -15,7 +15,6 @@ class CreatePharmacyResponseSchema(BaseModel):
     title: str
     description: str
     products: List[Dict[str, Any]] = None
-    prices:  List[Dict[str, Any]] = None
 
     @classmethod
     def from_entity(cls, pharmacy: PharmacyEntity) -> 'CreatePharmacyResponseSchema':
@@ -24,7 +23,6 @@ class CreatePharmacyResponseSchema(BaseModel):
             title=pharmacy.title.as_generic_type(),
             description=pharmacy.description.as_generic_type(),
             products=pharmacy.products,
-            prices=pharmacy.prices,
         )
 
 

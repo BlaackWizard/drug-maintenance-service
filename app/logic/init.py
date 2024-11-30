@@ -8,23 +8,22 @@ from ..infra.repositories.mongo import MongoDBPharmacyRepo, MongoDBProductRepo
 from ..settings.config import Config
 from .commands.pharmacy import AddProductWithPriceCommand  # noqa
 from .commands.pharmacy import AddProductWithPriceHandler  # noqa
+from .commands.pharmacy import ChangeProductPriceCommand  # noqa
 from .commands.pharmacy import DeletePharmacyCommand  # noqa
-from .commands.pharmacy import (ChangeProductPriceCommand,  # noqa
-                                ChangeProductPriceHandler,
+from .commands.pharmacy import (ChangeProductPriceHandler,  # noqa
                                 CreatePharmacyCommand, DeletePharmacyHandler,
                                 DeleteProductFromPharmacyCommand,
                                 DeleteProductFromPharmacyHandler,
                                 GetPharmacyByOidCommand,
                                 GetPharmacyByOidHandler, PharmacyHandler,
                                 UpdatePharmacyCommand, UpdatePharmacyHandler)
-from .commands.products import AddProductToPharmacyCommand  # noqa
-from .commands.products import AddProductToPharmacyHandler  # noqa
 from .commands.products import CreateProductCommand  # noqa
 from .commands.products import CreateProductCommandHandler  # noqa
 from .commands.products import DeleteProductCommand  # noqa
-from .commands.products import (DeleteProductHandler,  # noqa
-                                GetProductByOidCommand, GetProductByOidHandler,
-                                UpdateProductCommand, UpdateProductHandler)
+from .commands.products import DeleteProductHandler  # noqa
+from .commands.products import (GetProductByOidCommand,  # noqa
+                                GetProductByOidHandler, UpdateProductCommand,
+                                UpdateProductHandler)
 from .mediator import Mediator
 
 
@@ -38,7 +37,6 @@ def _init_container() -> Container:
     container.register(Config, instance=Config(), scope=Scope.singleton)
     container.register(CreateProductCommandHandler)
     container.register(PharmacyHandler)
-    container.register(AddProductToPharmacyHandler)
     container.register(GetProductByOidHandler)
     container.register(GetPharmacyByOidHandler)
     container.register(UpdatePharmacyHandler)
@@ -58,10 +56,6 @@ def _init_container() -> Container:
         mediator.register_command(
             CreateProductCommand,
             [container.resolve(CreateProductCommandHandler)],
-        )
-        mediator.register_command(
-            AddProductToPharmacyCommand,
-            [container.resolve(AddProductToPharmacyHandler)],
         )
         mediator.register_command(
             GetProductByOidCommand,

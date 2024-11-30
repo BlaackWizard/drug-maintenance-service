@@ -73,6 +73,7 @@ async def add_product_to_pharmacy_handler(
                 product_oid=schema.product_oid,
                 pharmacy_oid=schema.pharmacy_oid,
                 price=schema.price,
+                count=schema.count,
             ),
         )
     except ApplicationException as exc:
@@ -110,6 +111,7 @@ async def get_product_by_oid(
         image_url=product.image_url,
         manufacturer=product.manufacturer,
         ingredients=product.ingredients,
+        count=product.count,
     )
 
 

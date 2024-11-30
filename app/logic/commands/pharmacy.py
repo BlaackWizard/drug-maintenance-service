@@ -20,6 +20,7 @@ class AddProductWithPriceCommand(BaseCommand):
     pharmacy_oid: str
     product_oid: str
     price: float
+    count: int
 
 
 @dataclass(frozen=True)
@@ -117,6 +118,7 @@ class AddProductWithPriceHandler(CommandHandler[AddProductWithPriceCommand, Phar
             pharmacy_oid=pharmacy.oid,
             product_oid=product.oid,
             price=Price(command.price),
+            count=command.count,
         )
 
         return pharmacy

@@ -60,7 +60,7 @@ class BasePharmacyRepo(ABC):
         ...
 
     @abstractmethod
-    async def add_product_to_pharmacy(self, pharmacy_oid: str, product_oid: str, price: Price):
+    async def add_product_to_pharmacy(self, pharmacy_oid: str, product_oid: str, price: Price, count: int):
         ...
 
     @abstractmethod

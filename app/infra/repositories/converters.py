@@ -21,7 +21,6 @@ def convert_pharmacy_to_document(pharmacy: PharmacyEntity) -> dict:
         'title': pharmacy.title.as_generic_type(),
         'description': pharmacy.description.as_generic_type(),
         'products': pharmacy.products,
-        'prices': pharmacy.prices,
         'created_at': pharmacy.created_at,
     }
 
@@ -32,7 +31,6 @@ def convert_pharmacy_to_document_without_generic_type(pharmacy: PharmacyEntity) 
         'title': pharmacy.title,
         'description': pharmacy.description,
         'products': pharmacy.products,
-        'prices': pharmacy.prices,
         'created_at': pharmacy.created_at,
     }
 
@@ -42,7 +40,6 @@ def convert_document_to_pharmacy(document: dict) -> PharmacyEntity:
         oid=document['oid'],
         title=document['title'],
         description=document['description'],
-        prices=document['prices'],
         products=document['products'],
         created_at=document['created_at'],
     )
