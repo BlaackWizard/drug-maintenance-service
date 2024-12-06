@@ -1,5 +1,5 @@
-# FastAPI + Amazon S3 DDD application w\ MongoDB
-This is a service to find drugs and pharmacies, configured to use Docker, Makefile, and PostgreSQL.
+# FastAPI + Amazon S3 DDD application w\ MongoDB Atlas
+This is a service to find drugs and pharmacies, configured to use Docker, Makefile.
 
 ## Requirements
 

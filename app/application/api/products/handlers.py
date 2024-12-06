@@ -7,14 +7,15 @@ from ....logic.commands.pharmacy import AddProductWithPriceCommand
 from ....logic.commands.products import (CreateProductCommand,
                                          DeleteProductCommand,
                                          GetProductByOidCommand,
-                                         UpdateProductCommand)
-from ....logic.init import init_container
+                                         UpdateProductCommand, FindProductCommand)
+from app.logic.containers.init import init_container
 from ....logic.mediator import Mediator
 from ..schemas import ErrorSchema
 from .schemas import (AddProductToPharmacyRequestSchema,
                       AddProductToPharmacyResponseSchema,
                       CreateProductRequestSchema, CreateProductResponseSchema,
-                      DeleteProductRequestSchema, UpdateProductRequestSchema)
+                      DeleteProductRequestSchema, UpdateProductRequestSchema, FindProductResponseSchema,
+                      FindProductRequestSchema)
 
 router = APIRouter(tags=['Products'])
 
@@ -175,3 +176,32 @@ async def delete_product(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
 
     return True
+
+
+@router.post(
+    '/search-product',
+    status_code=status.HTTP_200_OK,
+    description="Эндпоинт ищет товар с заданным названием от пользователя, если товара нет, возвращается 400 ошибка",
+    responses={
+        status.HTTP_201_CREATED: {'model': FindProductResponseSchema},
+        status.HTTP_400_BAD_REQUEST: {'model': ErrorSchema},
+    },
+)
+async def search_product(
+    schema: FindProductRequestSchema,
+    container=Depends(init_container)
+):
+    mediator: Mediator = container.resolve(Mediator)
+    try:
+        products = await mediator.handle_command(
+            FindProductCommand(
+                product_title=schema.product_title
+            )
+        )
+    except ApplicationException as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
+
+    return FindProductResponseSchema(
+        products=products
+    )
+

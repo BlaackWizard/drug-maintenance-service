@@ -5,7 +5,7 @@ from ...domain.entities.product import ProductEntity
 from ...domain.values.product import ExpiresDate, Text, Title
 from ...infra.repositories.base import BaseProductRepo
 from ...logic.commands.base import BaseCommand, CommandHandler
-from ..exceptions.products import ProductWithThatTitleAlreadyExistsException
+from ..exceptions.products import ProductWithThatTitleAlreadyExistsException, ProductNotFoundWithThisQuery
 
 
 @dataclass(frozen=True)
@@ -103,3 +103,23 @@ class DeleteProductHandler(CommandHandler[DeleteProductCommand, None]):
         await self.product_repository.delete_product(
             product_oid=command.product_oid,
         )
+
+
+@dataclass(frozen=True)
+class FindProductCommand(BaseCommand):
+    product_title: str
+
+
+@dataclass(frozen=True)
+class FindProductHandler(CommandHandler[FindProductCommand, list]):
+    product_repository: BaseProductRepo
+
+    async def handle(self, command: FindProductCommand) -> list:
+        products = await self.product_repository.search_product(command.product_title)
+        if products == []:
+            raise ProductNotFoundWithThisQuery
+
+        for product in products:
+            del product['_id']
+
+        return products

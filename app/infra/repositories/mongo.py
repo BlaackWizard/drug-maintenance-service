@@ -138,6 +138,26 @@ class MongoDBPharmacyRepo(BasePharmacyRepo):
             {"oid": pharmacy_oid},
         )
 
+    async def find_pharmacy(
+        self,
+        pharmacy_title: str
+    ):
+        collection = self._get_pharmacy_collection()
+
+        result = collection.aggregate([
+            {
+                "$search": {
+                    "index": "language_search",
+                    "text": {
+                        "query": f'{pharmacy_title}',
+                        "path": "title",
+                        "fuzzy": {}
+                    }
+                }
+            }
+        ])
+        pharmacies = await result.to_list(length=300)
+        return pharmacies
 
 @dataclass
 class MongoDBProductRepo(BaseProductRepo):
@@ -167,6 +187,25 @@ class MongoDBProductRepo(BaseProductRepo):
         product_entity = convert_document_to_product(product_document)
 
         return product_entity
+
+    async def search_product(self, query: str):
+        collection = self._get_product_collection()
+        result = collection.aggregate([
+            {
+                "$search": {
+                    "index": "product_search",
+                    "text": {
+                        "query": f'{query}',
+                        "path": "title",
+                        "fuzzy": {}
+                    }
+                }
+            }
+        ])
+
+        results = await result.to_list(length=300)
+
+        return results
 
     async def update_product(
             self,

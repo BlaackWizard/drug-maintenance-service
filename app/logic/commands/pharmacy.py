@@ -3,9 +3,9 @@ from dataclasses import dataclass
 from app.domain.entities.pharmacy import PharmacyEntity
 from app.domain.values.product import Price, Text, Title
 from app.infra.repositories.base import BasePharmacyRepo, BaseProductRepo
-from app.logic.commands.base import BaseCommand, CommandHandler
+from app.logic.commands.base import BaseCommand, CommandHandler, CT, CR
 from app.logic.exceptions.pharmacy import (
-    PharmacyByTitleAlreadyExistsException, PharmacyNotFoundException)
+    PharmacyByTitleAlreadyExistsException, PharmacyNotFoundException, PharmacyNotFoundWithThisQuery)
 from app.logic.exceptions.products import ProductNotFoundException
 
 
@@ -154,3 +154,24 @@ class DeletePharmacyHandler(CommandHandler[DeletePharmacyCommand, None]):
         await self.pharmacy_repository.delete_pharmacy(
             pharmacy_oid=command.pharmacy_oid,
         )
+
+
+@dataclass(frozen=True)
+class FindPharmacyCommand(BaseCommand):
+    pharmacy_title: str
+
+
+@dataclass(frozen=True)
+class FindPharmacyHandler(CommandHandler[FindPharmacyCommand, list]):
+    pharmacy_repository: BasePharmacyRepo
+
+    async def handle(self, command: FindPharmacyCommand) -> list:
+        pharmacies = await self.pharmacy_repository.find_pharmacy(command.pharmacy_title)
+
+        if pharmacies == []:
+            raise PharmacyNotFoundWithThisQuery
+
+        for pharmacy in pharmacies:
+            del pharmacy['_id']
+
+        return pharmacies

@@ -71,3 +71,12 @@ class AddProductToPharmacyRequestSchema(BaseModel):
 
 class DeleteProductRequestSchema(BaseModel):
     product_oid: str
+
+
+class FindProductRequestSchema(BaseModel):
+    product_title: str
+
+
+class FindProductResponseSchema(BaseModel):
+    products: list
+

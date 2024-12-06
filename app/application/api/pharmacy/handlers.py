@@ -7,8 +7,8 @@ from ....logic.commands.pharmacy import (ChangeProductPriceCommand,
                                          DeletePharmacyCommand,
                                          DeleteProductFromPharmacyCommand,
                                          GetPharmacyByOidCommand,
-                                         UpdatePharmacyCommand)
-from ....logic.init import init_container
+                                         UpdatePharmacyCommand, FindPharmacyCommand)
+from app.logic.containers.init import init_container
 from ....logic.mediator import Mediator
 from ..schemas import ErrorSchema
 from .schemas import (ChangeProductPriceRequestSchema,
@@ -16,7 +16,7 @@ from .schemas import (ChangeProductPriceRequestSchema,
                       CreatePharmacyResponseSchema,
                       DeletePharmacyRequestSchema,
                       DeleteProductFromPharmacyRequestSchema,
-                      UpdatePharmacyRequestSchema)
+                      UpdatePharmacyRequestSchema, FindPharmacyRequestSchema, FindPharmacyResponseSchema)
 
 router = APIRouter(
     tags=['Pharmacy'],
@@ -193,3 +193,28 @@ async def delete_pharmacy(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
 
     return True
+
+
+@router.post(
+    '/find-pharmacy',
+    status_code=status.HTTP_200_OK,
+    description="Эндпоинт ищет товар с заданным названием от пользователя, если товара нет, возвращается 400 ошибка",
+)
+async def find_pharmacy(
+    schema: FindPharmacyRequestSchema,
+    container=Depends(init_container)
+):
+    mediator: Mediator = container.resolve(Mediator)
+
+    try:
+        pharmacies = await mediator.handle_command(
+            FindPharmacyCommand(
+                pharmacy_title=schema.pharmacy_title
+            )
+        )
+    except ApplicationException as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
+
+    return FindPharmacyResponseSchema(
+        pharmacies=pharmacies
+    )

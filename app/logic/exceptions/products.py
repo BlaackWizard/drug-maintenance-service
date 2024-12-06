@@ -26,3 +26,12 @@ class ProductNotFoundException(LogicException):
     @property
     def message(self):
         return 'Товар не найден'
+
+
+@dataclass(eq=False)
+class ProductNotFoundWithThisQuery(LogicException):
+
+    @property
+    def message(self):
+        return 'Не удалось найти товар с этим названием'
+

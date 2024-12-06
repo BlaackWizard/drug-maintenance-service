@@ -44,3 +44,11 @@ class DeleteProductFromPharmacyRequestSchema(BaseModel):
 
 class DeletePharmacyRequestSchema(BaseModel):
     pharmacy_oid: str
+
+
+class FindPharmacyRequestSchema(BaseModel):
+    pharmacy_title: str
+
+
+class FindPharmacyResponseSchema(BaseModel):
+    pharmacies: list

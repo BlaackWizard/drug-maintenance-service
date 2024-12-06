@@ -40,6 +40,10 @@ class BaseProductRepo(ABC):
     ):
         ...
 
+    @abstractmethod
+    async def search_product(self, query: str):
+        ...
+
 
 @dataclass
 class BasePharmacyRepo(ABC):
@@ -84,5 +88,12 @@ class BasePharmacyRepo(ABC):
     async def delete_pharmacy(
             self,
             pharmacy_oid: str,
+    ):
+        ...
+
+    @abstractmethod
+    async def find_pharmacy(
+        self,
+        pharmacy_title: str
     ):
         ...

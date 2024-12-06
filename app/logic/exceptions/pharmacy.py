@@ -26,3 +26,11 @@ class PharmacyNotFoundException(LogicException):
     @property
     def message(self):
         return 'Аптека не найдена'
+
+
+@dataclass(eq=False)
+class PharmacyNotFoundWithThisQuery(LogicException):
+
+    @property
+    def message(self):
+        return 'Аптека не найдена по этому названию'

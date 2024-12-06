@@ -2,7 +2,7 @@ from punq import Container, Scope
 
 from ..infra.repositories.base import BasePharmacyRepo, BaseProductRepo
 from ..infra.repositories.mongo import MongoDBPharmacyRepo, MongoDBProductRepo
-from ..logic.init import _init_container
+from app.logic.containers.init import _init_container
 
 
 def init_dummy_container() -> Container:
