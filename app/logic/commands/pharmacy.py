@@ -3,9 +3,10 @@ from dataclasses import dataclass
 from app.domain.entities.pharmacy import PharmacyEntity
 from app.domain.values.product import Price, Text, Title
 from app.infra.repositories.base import BasePharmacyRepo, BaseProductRepo
-from app.logic.commands.base import BaseCommand, CommandHandler, CT, CR
+from app.logic.commands.base import BaseCommand, CommandHandler
 from app.logic.exceptions.pharmacy import (
-    PharmacyByTitleAlreadyExistsException, PharmacyNotFoundException, PharmacyNotFoundWithThisQuery)
+    PharmacyByTitleAlreadyExistsException, PharmacyNotFoundException,
+    PharmacyNotFoundWithThisQuery)
 from app.logic.exceptions.products import ProductNotFoundException
 
 

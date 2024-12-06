@@ -94,6 +94,6 @@ class BasePharmacyRepo(ABC):
     @abstractmethod
     async def find_pharmacy(
         self,
-        pharmacy_title: str
+        pharmacy_title: str,
     ):
         ...

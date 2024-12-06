@@ -1,8 +1,16 @@
-from app.logic.commands.pharmacy import PharmacyHandler, GetPharmacyByOidHandler, UpdatePharmacyHandler, \
-    ChangeProductPriceHandler, AddProductWithPriceHandler, DeleteProductFromPharmacyHandler, DeletePharmacyHandler, \
-    FindPharmacyHandler
-from app.logic.commands.products import CreateProductCommandHandler, GetProductByOidHandler, UpdateProductHandler, \
-    DeleteProductHandler, FindProductHandler
+from app.logic.commands.pharmacy import (AddProductWithPriceHandler,
+                                         ChangeProductPriceHandler,
+                                         DeletePharmacyHandler,
+                                         DeleteProductFromPharmacyHandler,
+                                         FindPharmacyHandler,
+                                         GetPharmacyByOidHandler,
+                                         PharmacyHandler,
+                                         UpdatePharmacyHandler)
+from app.logic.commands.products import (CreateProductCommandHandler,
+                                         DeleteProductHandler,
+                                         FindProductHandler,
+                                         GetProductByOidHandler,
+                                         UpdateProductHandler)
 
 
 def init_handler_dependencies(container):

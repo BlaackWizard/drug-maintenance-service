@@ -1,21 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.domain.exceptions.base import ApplicationException
+from app.logic.containers.init import init_container
 
 from ....domain.values.product import ExpiresDate, Text, Title
 from ....logic.commands.pharmacy import AddProductWithPriceCommand
 from ....logic.commands.products import (CreateProductCommand,
                                          DeleteProductCommand,
+                                         FindProductCommand,
                                          GetProductByOidCommand,
-                                         UpdateProductCommand, FindProductCommand)
-from app.logic.containers.init import init_container
+                                         UpdateProductCommand)
 from ....logic.mediator import Mediator
 from ..schemas import ErrorSchema
 from .schemas import (AddProductToPharmacyRequestSchema,
                       AddProductToPharmacyResponseSchema,
                       CreateProductRequestSchema, CreateProductResponseSchema,
-                      DeleteProductRequestSchema, UpdateProductRequestSchema, FindProductResponseSchema,
-                      FindProductRequestSchema)
+                      DeleteProductRequestSchema, FindProductRequestSchema,
+                      FindProductResponseSchema, UpdateProductRequestSchema)
 
 router = APIRouter(tags=['Products'])
 
@@ -189,19 +190,18 @@ async def delete_product(
 )
 async def search_product(
     schema: FindProductRequestSchema,
-    container=Depends(init_container)
+    container=Depends(init_container),
 ):
     mediator: Mediator = container.resolve(Mediator)
     try:
         products = await mediator.handle_command(
             FindProductCommand(
-                product_title=schema.product_title
-            )
+                product_title=schema.product_title,
+            ),
         )
     except ApplicationException as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
 
     return FindProductResponseSchema(
-        products=products
+        products=products,
     )
-

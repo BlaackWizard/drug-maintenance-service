@@ -79,4 +79,3 @@ class FindProductRequestSchema(BaseModel):
 
 class FindProductResponseSchema(BaseModel):
     products: list
-

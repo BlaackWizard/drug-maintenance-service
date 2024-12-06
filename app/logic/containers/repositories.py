@@ -1,8 +1,9 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from punq import Scope
 
-from app.infra.repositories.base import BaseProductRepo, BasePharmacyRepo
-from app.infra.repositories.mongo import MongoDBPharmacyRepo, MongoDBProductRepo
+from app.infra.repositories.base import BasePharmacyRepo, BaseProductRepo
+from app.infra.repositories.mongo import (MongoDBPharmacyRepo,
+                                          MongoDBProductRepo)
 from app.settings.config import Config
 
 
@@ -27,4 +28,3 @@ def init_repository_dependencies(container):
 
     container.register(BasePharmacyRepo, factory=init_pharmacy_mongodb_repository, scope=Scope.singleton)
     container.register(BaseProductRepo, factory=init_product_mongodb_repository, scope=Scope.singleton)
-

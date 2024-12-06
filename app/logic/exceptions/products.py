@@ -34,4 +34,3 @@ class ProductNotFoundWithThisQuery(LogicException):
     @property
     def message(self):
         return 'Не удалось найти товар с этим названием'
-

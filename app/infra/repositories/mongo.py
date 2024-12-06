@@ -140,7 +140,7 @@ class MongoDBPharmacyRepo(BasePharmacyRepo):
 
     async def find_pharmacy(
         self,
-        pharmacy_title: str
+        pharmacy_title: str,
     ):
         collection = self._get_pharmacy_collection()
 
@@ -151,13 +151,14 @@ class MongoDBPharmacyRepo(BasePharmacyRepo):
                     "text": {
                         "query": f'{pharmacy_title}',
                         "path": "title",
-                        "fuzzy": {}
-                    }
-                }
-            }
+                        "fuzzy": {},
+                    },
+                },
+            },
         ])
         pharmacies = await result.to_list(length=300)
         return pharmacies
+
 
 @dataclass
 class MongoDBProductRepo(BaseProductRepo):
@@ -197,10 +198,10 @@ class MongoDBProductRepo(BaseProductRepo):
                     "text": {
                         "query": f'{query}',
                         "path": "title",
-                        "fuzzy": {}
-                    }
-                }
-            }
+                        "fuzzy": {},
+                    },
+                },
+            },
         ])
 
         results = await result.to_list(length=300)

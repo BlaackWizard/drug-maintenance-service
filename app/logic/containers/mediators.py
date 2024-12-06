@@ -1,11 +1,29 @@
-from app.logic.commands.pharmacy import PharmacyHandler, CreatePharmacyCommand, GetPharmacyByOidCommand, \
-    GetPharmacyByOidHandler, UpdatePharmacyCommand, UpdatePharmacyHandler, ChangeProductPriceCommand, \
-    ChangeProductPriceHandler, AddProductWithPriceCommand, AddProductWithPriceHandler, DeleteProductFromPharmacyCommand, \
-    DeleteProductFromPharmacyHandler, DeletePharmacyCommand, DeletePharmacyHandler, FindPharmacyCommand, \
-    FindPharmacyHandler
-from app.logic.commands.products import CreateProductCommand, GetProductByOidCommand, GetProductByOidHandler, \
-    UpdateProductCommand, UpdateProductHandler, DeleteProductCommand, DeleteProductHandler, FindProductCommand, \
-    FindProductHandler, CreateProductCommandHandler
+from app.logic.commands.pharmacy import (AddProductWithPriceCommand,
+                                         AddProductWithPriceHandler,
+                                         ChangeProductPriceCommand,
+                                         ChangeProductPriceHandler,
+                                         CreatePharmacyCommand,
+                                         DeletePharmacyCommand,
+                                         DeletePharmacyHandler,
+                                         DeleteProductFromPharmacyCommand,
+                                         DeleteProductFromPharmacyHandler,
+                                         FindPharmacyCommand,
+                                         FindPharmacyHandler,
+                                         GetPharmacyByOidCommand,
+                                         GetPharmacyByOidHandler,
+                                         PharmacyHandler,
+                                         UpdatePharmacyCommand,
+                                         UpdatePharmacyHandler)
+from app.logic.commands.products import (CreateProductCommand,
+                                         CreateProductCommandHandler,
+                                         DeleteProductCommand,
+                                         DeleteProductHandler,
+                                         FindProductCommand,
+                                         FindProductHandler,
+                                         GetProductByOidCommand,
+                                         GetProductByOidHandler,
+                                         UpdateProductCommand,
+                                         UpdateProductHandler)
 
 
 def register_mediator_commands(container, mediator):
@@ -55,10 +73,10 @@ def register_mediator_commands(container, mediator):
     )
     mediator.register_command(
         FindProductCommand,
-        [container.resolve(FindProductHandler)]
+        [container.resolve(FindProductHandler)],
     )
     mediator.register_command(
         FindPharmacyCommand,
-        [container.resolve(FindPharmacyHandler)]
+        [container.resolve(FindPharmacyHandler)],
     )
     return mediator

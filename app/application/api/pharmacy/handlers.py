@@ -1,14 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.logic.containers.init import init_container
+
 from ....domain.exceptions.base import ApplicationException
 from ....domain.values.product import Text, Title
 from ....logic.commands.pharmacy import (ChangeProductPriceCommand,
                                          CreatePharmacyCommand,
                                          DeletePharmacyCommand,
                                          DeleteProductFromPharmacyCommand,
+                                         FindPharmacyCommand,
                                          GetPharmacyByOidCommand,
-                                         UpdatePharmacyCommand, FindPharmacyCommand)
-from app.logic.containers.init import init_container
+                                         UpdatePharmacyCommand)
 from ....logic.mediator import Mediator
 from ..schemas import ErrorSchema
 from .schemas import (ChangeProductPriceRequestSchema,
@@ -16,7 +18,8 @@ from .schemas import (ChangeProductPriceRequestSchema,
                       CreatePharmacyResponseSchema,
                       DeletePharmacyRequestSchema,
                       DeleteProductFromPharmacyRequestSchema,
-                      UpdatePharmacyRequestSchema, FindPharmacyRequestSchema, FindPharmacyResponseSchema)
+                      FindPharmacyRequestSchema, FindPharmacyResponseSchema,
+                      UpdatePharmacyRequestSchema)
 
 router = APIRouter(
     tags=['Pharmacy'],
@@ -202,19 +205,19 @@ async def delete_pharmacy(
 )
 async def find_pharmacy(
     schema: FindPharmacyRequestSchema,
-    container=Depends(init_container)
+    container=Depends(init_container),
 ):
     mediator: Mediator = container.resolve(Mediator)
 
     try:
         pharmacies = await mediator.handle_command(
             FindPharmacyCommand(
-                pharmacy_title=schema.pharmacy_title
-            )
+                pharmacy_title=schema.pharmacy_title,
+            ),
         )
     except ApplicationException as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={'error': exc.message})
 
     return FindPharmacyResponseSchema(
-        pharmacies=pharmacies
+        pharmacies=pharmacies,
     )
